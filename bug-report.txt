@@ -1,0 +1,1501 @@
+--------------------------------------------------------------------------------
+libcamera-apps Bug Report
+--------------------------------------------------------------------------------
+Date: 13-01-2022 (16:47:58)
+Command: ./libcamera-apps/utils/camera-bug-report -t 10000 -c libcamera-hello -t 5000
+
+--------------------------------------------------------------------------------
+Hardware information
+--------------------------------------------------------------------------------
+** hostname **
+raspberrypi
+
+** cat /proc/cpuinfo **
+processor	: 0
+model name	: ARMv6-compatible processor rev 7 (v6l)
+BogoMIPS	: 997.08
+Features	: half thumb fastmult vfp edsp java tls 
+CPU implementer	: 0x41
+CPU architecture: 7
+CPU variant	: 0x0
+CPU part	: 0xb76
+CPU revision	: 7
+
+Hardware	: BCM2835
+Revision	: 9000c1
+Serial		: 00000000e0c8b984
+Model		: Raspberry Pi Zero W Rev 1.1
+
+--------------------------------------------------------------------------------
+Configuration
+--------------------------------------------------------------------------------
+** cat /boot/cmdline.txt **
+console=serial0,115200 console=tty1 root=PARTUUID=da51e197-02 rootfstype=ext4 fsck.repair=yes rootwait
+
+** cat /boot/config.txt **
+# For more options and information see
+# http://rpf.io/configtxt
+# Some settings may impact device functionality. See link above for details
+
+# uncomment if you get no picture on HDMI for a default "safe" mode
+#hdmi_safe=1
+
+# uncomment the following to adjust overscan. Use positive numbers if console
+# goes off screen, and negative if there is too much border
+#overscan_left=16
+#overscan_right=16
+#overscan_top=16
+#overscan_bottom=16
+
+# uncomment to force a console size. By default it will be display's size minus
+# overscan.
+#framebuffer_width=1280
+#framebuffer_height=720
+
+# uncomment if hdmi display is not detected and composite is being output
+#hdmi_force_hotplug=1
+
+# uncomment to force a specific HDMI mode (this will force VGA)
+#hdmi_group=1
+#hdmi_mode=1
+
+# uncomment to force a HDMI mode rather than DVI. This can make audio work in
+# DMT (computer monitor) modes
+#hdmi_drive=2
+
+# uncomment to increase signal to HDMI, if you have interference, blanking, or
+# no display
+#config_hdmi_boost=4
+
+# uncomment for composite PAL
+#sdtv_mode=2
+
+#uncomment to overclock the arm. 700 MHz is the default.
+#arm_freq=800
+
+# Uncomment some or all of these to enable the optional hardware interfaces
+#dtparam=i2c_arm=on
+#dtparam=i2s=on
+#dtparam=spi=on
+
+# Uncomment this to enable infrared communication.
+#dtoverlay=gpio-ir,gpio_pin=17
+#dtoverlay=gpio-ir-tx,gpio_pin=18
+
+# Additional overlays and parameters are documented /boot/overlays/README
+
+# Enable audio (loads snd_bcm2835)
+dtparam=audio=on
+
+# Automatically load overlays for detected cameras
+camera_auto_detect=1
+dtoverlay=imx477
+#start_x=1
+
+# Automatically load overlays for detected DSI displays
+display_auto_detect=1
+
+# Enable DRM VC4 V3D driver
+dtoverlay=vc4-kms-v3d
+max_framebuffers=2
+
+# Disable compensation for displays with overscan
+disable_overscan=1
+
+[cm4]
+# Enable host mode on the 2711 built-in XHCI USB controller.
+# This line should be removed if the legacy DWC2 controller is required
+# (e.g. for USB device mode) or if USB support is not required.
+otg_mode=1
+
+[all]
+
+[pi4]
+#dtoverlay=vc4-fkms-v3d
+# Run as fast as firmware / board allows
+arm_boost=1
+
+[all]
+#enable_uart=1
+#gpu_mem=128
+
+--------------------------------------------------------------------------------
+Logs
+--------------------------------------------------------------------------------
+** dmesg **
+[    0.000000] Booting Linux on physical CPU 0x0
+[    0.000000] Linux version 5.10.63+ (dom@buildbot) (arm-linux-gnueabihf-gcc-8 (Ubuntu/Linaro 8.4.0-3ubuntu1) 8.4.0, GNU ld (GNU Binutils for Ubuntu) 2.34) #1488 Thu Nov 18 16:14:04 GMT 2021
+[    0.000000] CPU: ARMv6-compatible processor [410fb767] revision 7 (ARMv7), cr=00c5387d
+[    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT nonaliasing instruction cache
+[    0.000000] OF: fdt: Machine model: Raspberry Pi Zero W Rev 1.1
+[    0.000000] random: fast init done
+[    0.000000] Memory policy: Data cache writeback
+[    0.000000] Reserved memory: created CMA memory pool at 0x0bc00000, size 256 MiB
+[    0.000000] OF: reserved mem: initialized node linux,cma, compatible id shared-dma-pool
+[    0.000000] Zone ranges:
+[    0.000000]   Normal   [mem 0x0000000000000000-0x000000001bffffff]
+[    0.000000] Movable zone start for each node
+[    0.000000] Early memory node ranges
+[    0.000000]   node   0: [mem 0x0000000000000000-0x000000001bffffff]
+[    0.000000] Initmem setup node 0 [mem 0x0000000000000000-0x000000001bffffff]
+[    0.000000] On node 0 totalpages: 114688
+[    0.000000]   Normal zone: 1008 pages used for memmap
+[    0.000000]   Normal zone: 0 pages reserved
+[    0.000000]   Normal zone: 114688 pages, LIFO batch:31
+[    0.000000] pcpu-alloc: s0 r0 d32768 u32768 alloc=1*32768
+[    0.000000] pcpu-alloc: [0] 0 
+[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 113680
+[    0.000000] Kernel command line: coherent_pool=1M 8250.nr_uarts=0 snd_bcm2835.enable_compat_alsa=0 snd_bcm2835.enable_hdmi=1 video=HDMI-A-1:1920x1080M@60 smsc95xx.macaddr=B8:27:EB:C8:B9:84 vc_mem.mem_base=0x1ec00000 vc_mem.mem_size=0x20000000  console=ttyS0,115200 console=tty1 root=PARTUUID=da51e197-02 rootfstype=ext4 fsck.repair=yes rootwait
+[    0.000000] Dentry cache hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[    0.000000] Inode-cache hash table entries: 32768 (order: 5, 131072 bytes, linear)
+[    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
+[    0.000000] Memory: 177396K/458752K available (8683K kernel code, 1324K rwdata, 2824K rodata, 420K init, 837K bss, 19212K reserved, 262144K cma-reserved)
+[    0.000000] SLUB: HWalign=32, Order=0-3, MinObjects=0, CPUs=1, Nodes=1
+[    0.000000] ftrace: allocating 30717 entries in 60 pages
+[    0.000000] ftrace: allocated 60 pages with 4 groups
+[    0.000000] NR_IRQS: 16, nr_irqs: 16, preallocated irqs: 16
+[    0.000000] random: get_random_bytes called from start_kernel+0x324/0x560 with crng_init=1
+[    0.000029] sched_clock: 32 bits at 1000kHz, resolution 1000ns, wraps every 2147483647500ns
+[    0.000116] clocksource: timer: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1911260446275 ns
+[    0.000228] bcm2835: system timer (irq = 27)
+[    0.000984] Console: colour dummy device 80x30
+[    0.001649] printk: console [tty1] enabled
+[    0.001761] Calibrating delay loop... 697.95 BogoMIPS (lpj=3489792)
+[    0.060431] pid_max: default: 32768 minimum: 301
+[    0.060789] LSM: Security Framework initializing
+[    0.061177] Mount-cache hash table entries: 1024 (order: 0, 4096 bytes, linear)
+[    0.061259] Mountpoint-cache hash table entries: 1024 (order: 0, 4096 bytes, linear)
+[    0.063752] cgroup: Disabling memory control group subsystem
+[    0.064316] CPU: Testing write buffer coherency: ok
+[    0.066690] Setting up static identity map for 0x8200 - 0x8238
+[    0.068256] devtmpfs: initialized
+[    0.083010] VFP support v0.3: implementor 41 architecture 1 part 20 variant b rev 5
+[    0.083531] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+[    0.083630] futex hash table entries: 256 (order: -1, 3072 bytes, linear)
+[    0.121418] pinctrl core: initialized pinctrl subsystem
+[    0.123743] NET: Registered protocol family 16
+[    0.128848] DMA: preallocated 1024 KiB pool for atomic coherent allocations
+[    0.135794] audit: initializing netlink subsys (disabled)
+[    0.137680] thermal_sys: Registered thermal governor 'step_wise'
+[    0.138745] hw-breakpoint: found 6 breakpoint and 1 watchpoint registers.
+[    0.138852] hw-breakpoint: maximum watchpoint size is 4 bytes.
+[    0.139209] Serial: AMBA PL011 UART driver
+[    0.141071] audit: type=2000 audit(0.130:1): state=initialized audit_enabled=0 res=1
+[    0.177947] bcm2835-mbox 2000b880.mailbox: mailbox enabled
+[    0.191349] raspberrypi-firmware soc:firmware: Attached to firmware from 2021-11-18T16:18:09, variant start
+[    0.201368] raspberrypi-firmware soc:firmware: Firmware hash is d9b293558b4cef6aabedcc53c178e7604de90788
+[    0.253756] Kprobes globally optimized
+[    0.265165] bcm2835-dma 20007000.dma: DMA legacy API manager, dmachans=0x1
+[    0.268819] SCSI subsystem initialized
+[    0.269390] usbcore: registered new interface driver usbfs
+[    0.269562] usbcore: registered new interface driver hub
+[    0.269728] usbcore: registered new device driver usb
+[    0.273074] clocksource: Switched to clocksource timer
+[    2.287377] VFS: Disk quotas dquot_6.6.0
+[    2.287611] VFS: Dquot-cache hash table entries: 1024 (order 0, 4096 bytes)
+[    2.287977] FS-Cache: Loaded
+[    2.288481] CacheFiles: Loaded
+[    2.290089] simple-framebuffer 1e402000.framebuffer: framebuffer at 0x1e402000, 0x7f8000 bytes, mapped to 0x(ptrval)
+[    2.290199] simple-framebuffer 1e402000.framebuffer: format=a8r8g8b8, mode=1920x1080x32, linelength=7680
+[    2.332718] Console: switching to colour frame buffer device 240x67
+[    2.371128] simple-framebuffer 1e402000.framebuffer: fb0: simplefb registered!
+[    2.394154] NET: Registered protocol family 2
+[    2.394736] IP idents hash table entries: 8192 (order: 4, 65536 bytes, linear)
+[    2.396796] tcp_listen_portaddr_hash hash table entries: 512 (order: 0, 4096 bytes, linear)
+[    2.397258] TCP established hash table entries: 4096 (order: 2, 16384 bytes, linear)
+[    2.397650] TCP bind hash table entries: 4096 (order: 2, 16384 bytes, linear)
+[    2.398000] TCP: Hash tables configured (established 4096 bind 4096)
+[    2.398471] UDP hash table entries: 256 (order: 0, 4096 bytes, linear)
+[    2.398789] UDP-Lite hash table entries: 256 (order: 0, 4096 bytes, linear)
+[    2.399607] NET: Registered protocol family 1
+[    2.401331] RPC: Registered named UNIX socket transport module.
+[    2.401619] RPC: Registered udp transport module.
+[    2.401814] RPC: Registered tcp transport module.
+[    2.402008] RPC: Registered tcp NFSv4.1 backchannel transport module.
+[    2.404304] hw perfevents: no irqs for PMU, sampling events not supported
+[    2.404698] hw perfevents: enabled with armv6_1176 PMU driver, 3 counters available
+[    2.410265] Initialise system trusted keyrings
+[    2.411215] workingset: timestamp_bits=14 max_order=17 bucket_order=3
+[    2.424592] zbud: loaded
+[    2.428336] FS-Cache: Netfs 'nfs' registered for caching
+[    2.430289] NFS: Registering the id_resolver key type
+[    2.430610] Key type id_resolver registered
+[    2.430805] Key type id_legacy registered
+[    2.431276] nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+[    2.431567] nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+[    2.434285] Key type asymmetric registered
+[    2.434498] Asymmetric key parser 'x509' registered
+[    2.434798] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 249)
+[    2.435098] io scheduler mq-deadline registered
+[    2.435289] io scheduler kyber registered
+[    2.449579] bcm2835-rng 20104000.rng: hwrng registered
+[    2.450722] vc-mem: phys_addr:0x00000000 mem_base=0x1ec00000 mem_size:0x20000000(512 MiB)
+[    2.464405] gpiomem-bcm2835 20200000.gpiomem: Initialised: Registers at 0x20200000
+[    2.501343] brd: module loaded
+[    2.531063] loop: module loaded
+[    2.545385] Loading iSCSI transport class v2.0-870.
+[    2.559502] libphy: Fixed MDIO Bus: probed
+[    2.571240] usbcore: registered new interface driver smsc95xx
+[    2.582352] dwc_otg: version 3.00a 10-AUG-2012 (platform bus)
+[    3.322019] Core Release: 2.80a
+[    3.333298] Setting default values for core params
+[    3.344072] Finished setting default values for core params
+[    3.555198] Using Buffer DMA mode
+[    3.565989] Periodic Transfer Interrupt Enhancement - disabled
+[    3.576561] Multiprocessor Interrupt Enhancement - disabled
+[    3.587074] OTG VER PARAM: 0, OTG VER FLAG: 0
+[    3.597689] Dedicated Tx FIFOs mode
+
+[    3.609715] WARN::dwc_otg_hcd_init:1074: FIQ DMA bounce buffers: virt = cbd04000 dma = 0x8bd04000 len=9024
+[    3.630853] FIQ FSM acceleration enabled for :
+               Non-periodic Split Transactions
+               Periodic Split Transactions
+               High-Speed Isochronous Endpoints
+               Interrupt/Control Split Transaction hack enabled
+[    3.683417] dwc_otg: Microframe scheduler enabled
+
+[    3.683746] WARN::hcd_init_fiq:457: FIQ on core 0
+
+[    3.704609] WARN::hcd_init_fiq:458: FIQ ASM at c065c3e4 length 36
+
+[    3.725371] WARN::hcd_init_fiq:497: MPHI regs_base at dc810000
+[    3.746009] dwc_otg 20980000.usb: DWC OTG Controller
+[    3.756572] dwc_otg 20980000.usb: new USB bus registered, assigned bus number 1
+[    3.767180] dwc_otg 20980000.usb: irq 56, io mem 0x00000000
+[    3.777515] Init: Port Power? op_state=1
+[    3.787697] Init: Power Port (0)
+[    3.798455] usb usb1: New USB device found, idVendor=1d6b, idProduct=0002, bcdDevice= 5.10
+[    3.808743] usb usb1: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    3.818843] usb usb1: Product: DWC OTG Controller
+[    3.828948] usb usb1: Manufacturer: Linux 5.10.63+ dwc_otg_hcd
+[    3.838961] usb usb1: SerialNumber: 20980000.usb
+[    3.850516] hub 1-0:1.0: USB hub found
+[    3.860737] hub 1-0:1.0: 1 port detected
+[    3.872847] dwc_otg: FIQ enabled
+[    3.872879] dwc_otg: NAK holdoff enabled
+[    3.872897] dwc_otg: FIQ split-transaction FSM enabled
+[    3.872927] Module dwc_common_port init
+[    3.873725] usbcore: registered new interface driver usb-storage
+[    3.884840] mousedev: PS/2 mouse device common for all mice
+[    3.897516] bcm2835-wdt bcm2835-wdt: Broadcom BCM2835 watchdog timer
+[    3.911733] sdhci: Secure Digital Host Controller Interface driver
+[    3.922106] sdhci: Copyright(c) Pierre Ossman
+[    3.933359] mmc-bcm2835 20300000.mmcnr: could not get clk, deferring probe
+[    3.944867] sdhost-bcm2835 20202000.mmc: could not get clk, deferring probe
+[    3.955720] sdhci-pltfm: SDHCI platform and OF driver helper
+[    3.967252] ledtrig-cpu: registered to indicate activity on CPUs
+[    3.978237] hid: raw HID events driver (C) Jiri Kosina
+[    3.988848] usbcore: registered new interface driver usbhid
+[    3.999134] usbhid: USB HID core driver
+[    4.017665] Initializing XFRM netlink socket
+[    4.028857] NET: Registered protocol family 17
+[    4.039247] Key type dns_resolver registered
+[    4.050241] registered taskstats version 1
+[    4.060323] Loading compiled-in X.509 certificates
+[    4.089258] uart-pl011 20201000.serial: cts_event_workaround enabled
+[    4.099730] 20201000.serial: ttyAMA0 at MMIO 0x20201000 (irq = 81, base_baud = 0) is a PL011 rev2
+[    4.114088] bcm2835-power bcm2835-power: Broadcom BCM2835 power domains driver
+[    4.127541] mmc-bcm2835 20300000.mmcnr: mmc_debug:0 mmc_debug2:0
+[    4.137931] mmc-bcm2835 20300000.mmcnr: DMA channel allocated
+[    4.176863] sdhost: log_buf @ (ptrval) (8bd03000)
+[    4.225304] mmc1: queuing unknown CIS tuple 0x80 (2 bytes)
+[    4.235691] mmc0: sdhost-bcm2835 loaded - DMA enabled (>1)
+[    4.250765] of_cfs_init
+[    4.261072] mmc1: queuing unknown CIS tuple 0x80 (3 bytes)
+[    4.292454] of_cfs_init: OK
+[    4.303795] mmc1: queuing unknown CIS tuple 0x80 (3 bytes)
+[    4.315652] Waiting for root device PARTUUID=da51e197-02...
+[    4.329674] mmc1: queuing unknown CIS tuple 0x80 (7 bytes)
+[    4.405347] mmc0: host does not support reading read-only switch, assuming write-enable
+[    4.423044] mmc0: new high speed SDHC card at address aaaa
+[    4.435707] mmcblk0: mmc0:aaaa SC16G 14.8 GiB
+[    4.454798]  mmcblk0: p1 p2
+[    4.491701] EXT4-fs (mmcblk0p2): mounted filesystem with ordered data mode. Opts: (null)
+[    4.502571] VFS: Mounted root (ext4 filesystem) readonly on device 179:2.
+[    4.523538] mmc1: new high speed SDIO card at address 0001
+[    4.534971] devtmpfs: mounted
+[    4.553750] Freeing unused kernel memory: 420K
+[    4.564195] Kernel memory protection not selected by kernel config.
+[    4.574431] Run /sbin/init as init process
+[    4.584627]   with arguments:
+[    4.584649]     /sbin/init
+[    4.584662]   with environment:
+[    4.584674]     HOME=/
+[    4.584685]     TERM=linux
+[    5.292743] systemd[1]: System time before build time, advancing clock.
+[    5.491564] NET: Registered protocol family 10
+[    5.504986] Segment Routing with IPv6
+[    5.654940] systemd[1]: systemd 247.3-6+rpi1 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ +LZ4 +ZSTD +SECCOMP +BLKID +ELFUTILS +KMOD +IDN2 -IDN +PCRE2 default-hierarchy=unified)
+[    5.679577] systemd[1]: Detected architecture arm.
+[    5.755785] systemd[1]: Set hostname to <raspberrypi>.
+[    8.798601] systemd[1]: /lib/systemd/system/plymouth-start.service:16: Unit configured to use KillMode=none. This is unsafe, as it disables systemd's process lifecycle management for the service. Please update your service to use a safer KillMode=, such as 'mixed' or 'control-group'. Support for KillMode=none is deprecated and will eventually be removed.
+[    9.427665] systemd[1]: Queued start job for default target Graphical Interface.
+[    9.445889] random: systemd: uninitialized urandom read (16 bytes read)
+[    9.466976] systemd[1]: Created slice system-getty.slice.
+[    9.494967] random: systemd: uninitialized urandom read (16 bytes read)
+[    9.511050] systemd[1]: Created slice system-modprobe.slice.
+[    9.538691] random: systemd: uninitialized urandom read (16 bytes read)
+[    9.555091] systemd[1]: Created slice system-systemd\x2dfsck.slice.
+[    9.585584] systemd[1]: Created slice User and Session Slice.
+[    9.614913] systemd[1]: Started Forward Password Requests to Wall Directory Watch.
+[    9.646339] systemd[1]: Set up automount Arbitrary Executable File Formats File System Automount Point.
+[    9.677512] systemd[1]: Reached target Slices.
+[    9.706941] systemd[1]: Reached target Swap.
+[    9.738449] systemd[1]: Listening on Syslog Socket.
+[    9.769360] systemd[1]: Listening on fsck to fsckd communication Socket.
+[    9.799732] systemd[1]: Listening on initctl Compatibility Named Pipe.
+[    9.832313] systemd[1]: Listening on Journal Audit Socket.
+[    9.863861] systemd[1]: Listening on Journal Socket (/dev/log).
+[    9.895907] systemd[1]: Listening on Journal Socket.
+[    9.932459] systemd[1]: Listening on udev Control Socket.
+[    9.964265] systemd[1]: Listening on udev Kernel Socket.
+[    9.996356] systemd[1]: Condition check resulted in Huge Pages File System being skipped.
+[   10.021232] systemd[1]: Mounting POSIX Message Queue File System...
+[   10.094640] systemd[1]: Mounting RPC Pipe File System...
+[   10.185149] systemd[1]: Mounting Kernel Debug File System...
+[   10.262677] systemd[1]: Mounting Kernel Trace File System...
+[   10.321360] systemd[1]: Condition check resulted in Kernel Module supporting RPCSEC_GSS being skipped.
+[   10.362494] systemd[1]: Starting Restore / save the current clock...
+[   10.435853] systemd[1]: Starting Set the console keyboard layout...
+[   10.548663] systemd[1]: Starting Create list of static device nodes for the current kernel...
+[   10.671983] systemd[1]: Starting Load Kernel Module configfs...
+[   10.767922] systemd[1]: Starting Load Kernel Module drm...
+[   10.899019] systemd[1]: Starting Load Kernel Module fuse...
+[   11.050894] systemd[1]: Condition check resulted in Set Up Additional Binary Formats being skipped.
+[   11.160890] fuse: init (API version 7.32)
+[   11.185145] systemd[1]: Starting File System Check on Root Device...
+[   11.345751] systemd[1]: Starting Journal Service...
+[   11.545125] systemd[1]: Starting Load Kernel Modules...
+[   11.762935] systemd[1]: Starting Coldplug All udev Devices...
+[   12.099765] systemd[1]: Mounted POSIX Message Queue File System.
+[   12.254405] i2c /dev entries driver
+[   12.383430] systemd[1]: Mounted RPC Pipe File System.
+[   12.501035] systemd[1]: Mounted Kernel Debug File System.
+[   12.609604] systemd[1]: Mounted Kernel Trace File System.
+[   12.746967] systemd[1]: Finished Restore / save the current clock.
+[   12.883648] systemd[1]: Finished Create list of static device nodes for the current kernel.
+[   12.995458] systemd[1]: modprobe@configfs.service: Succeeded.
+[   13.043712] systemd[1]: Finished Load Kernel Module configfs.
+[   13.122140] systemd[1]: modprobe@drm.service: Succeeded.
+[   13.183591] systemd[1]: Finished Load Kernel Module drm.
+[   13.262159] systemd[1]: modprobe@fuse.service: Succeeded.
+[   13.326805] systemd[1]: Finished Load Kernel Module fuse.
+[   13.423751] systemd[1]: Finished File System Check on Root Device.
+[   13.513684] systemd[1]: Finished Load Kernel Modules.
+[   13.734197] systemd[1]: Mounting FUSE Control File System...
+[   13.974548] systemd[1]: Mounting Kernel Configuration File System...
+[   14.195613] systemd[1]: Started File System Check Daemon to report status.
+[   14.305554] systemd[1]: Starting Remount Root and Kernel File Systems...
+[   14.481348] systemd[1]: Starting Apply Kernel Variables...
+[   14.670141] systemd[1]: Started Journal Service.
+[   15.423513] EXT4-fs (mmcblk0p2): re-mounted. Opts: (null)
+[   16.025573] systemd-journald[99]: Received client request to flush runtime journal.
+[   21.933402] vc_sm_cma: module is from the staging directory, the quality is unknown, you have been warned.
+[   21.936361] bcm2835_vc_sm_cma_probe: Videocore shared memory driver
+[   21.936409] [vc_sm_connected_init]: start
+[   21.974117] [vc_sm_connected_init]: installed successfully
+[   21.976906] mc: Linux media interface: v0.10
+[   22.265606] videodev: Linux video capture interface: v2.00
+[   22.370612] snd_bcm2835: module is from the staging directory, the quality is unknown, you have been warned.
+[   22.395530] bcm2835_audio bcm2835_audio: there is not valid maps for state default
+[   22.420240] bcm2835_mmal_vchiq: module is from the staging directory, the quality is unknown, you have been warned.
+[   22.433413] bcm2835_mmal_vchiq: module is from the staging directory, the quality is unknown, you have been warned.
+[   22.435542] bcm2835_mmal_vchiq: module is from the staging directory, the quality is unknown, you have been warned.
+[   22.463068] bcm2835_isp: module is from the staging directory, the quality is unknown, you have been warned.
+[   22.482346] bcm2835_v4l2: module is from the staging directory, the quality is unknown, you have been warned.
+[   22.564615] bcm2835-isp bcm2835-isp: Device node output[0] registered as /dev/video13
+[   22.577427] bcm2835-isp bcm2835-isp: Device node capture[0] registered as /dev/video14
+[   22.594800] bcm2835-isp bcm2835-isp: Device node capture[1] registered as /dev/video15
+[   22.597140] bcm2835-isp bcm2835-isp: Device node stats[2] registered as /dev/video16
+[   22.597212] bcm2835-isp bcm2835-isp: Register output node 0 with media controller
+[   22.597259] bcm2835-isp bcm2835-isp: Register capture node 1 with media controller
+[   22.597294] bcm2835-isp bcm2835-isp: Register capture node 2 with media controller
+[   22.597326] bcm2835-isp bcm2835-isp: Register capture node 3 with media controller
+[   22.597855] bcm2835-isp bcm2835-isp: Loaded V4L2 bcm2835-isp
+[   22.602333] bcm2835_codec: module is from the staging directory, the quality is unknown, you have been warned.
+[   22.693695] bcm2835-codec bcm2835-codec: Device registered as /dev/video10
+[   22.693816] bcm2835-codec bcm2835-codec: Loaded V4L2 decode
+[   22.724742] bcm2835-codec bcm2835-codec: Device registered as /dev/video11
+[   22.724844] bcm2835-codec bcm2835-codec: Loaded V4L2 encode
+[   22.752979] bcm2835-codec bcm2835-codec: Device registered as /dev/video12
+[   22.764952] bcm2835-codec bcm2835-codec: Loaded V4L2 isp
+[   22.789829] bcm2835-codec bcm2835-codec: Device registered as /dev/video18
+[   22.789932] bcm2835-codec bcm2835-codec: Loaded V4L2 image_fx
+[   23.636039] i2c i2c-11: Added multiplexed i2c bus 0
+[   23.656287] i2c i2c-11: Added multiplexed i2c bus 10
+[   25.037094] cfg80211: Loading compiled-in X.509 certificates for regulatory database
+[   25.521667] cfg80211: Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+[   25.542803] cfg80211: loaded regulatory.db is malformed or signature is missing/invalid
+[   26.133621] brcmfmac: F1 signature read @0x18000000=0x1541a9a6
+[   26.353714] brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac43430-sdio for chip BCM43430/1
+[   26.355156] usbcore: registered new interface driver brcmfmac
+[   26.578414] checking generic (1e402000 7f8000) vs hw (0 ffffffff)
+[   26.578457] fb0: switching to vc4drmfb from simple
+[   26.649955] Console: switching to colour dummy device 80x30
+[   26.671270] vc4-drm soc:gpu: bound 20400000.hvs (ops vc4_hvs_ops [vc4])
+[   26.699883] brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac43430-sdio for chip BCM43430/1
+[   26.705047] brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac43430-sdio for chip BCM43430/1
+[   26.709353] Registered IR keymap rc-cec
+[   26.718394] brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM43430/1 wl0: Jul 19 2021 03:24:18 version 7.45.98 (TOB) (56df937 CY) FWID 01-8e14b897
+[   26.725788] rc rc0: vc4 as /devices/platform/soc/20902000.hdmi/rc/rc0
+[   26.817383] input: vc4 as /devices/platform/soc/20902000.hdmi/rc/rc0/input0
+[   26.934225] vc4_hdmi 20902000.hdmi: Could not register sound card: -517
+[   32.919991] 8021q: 802.1Q VLAN Support v1.8
+[   34.403275] imx477_vddl: disabling
+[   34.403318] imx477_vdig: disabling
+[   34.403343] imx477_vana: disabling
+[   34.410216] uart-pl011 20201000.serial: no DMA platform data
+[   34.484898] Adding 102396k swap on /var/swap.  Priority:-2 extents:1 across:102396k SSFS
+[   36.049823] random: crng init done
+[   36.049855] random: 7 urandom warning(s) missed due to ratelimiting
+[   39.140247] Bluetooth: Core ver 2.22
+[   39.140430] NET: Registered protocol family 31
+[   39.140447] Bluetooth: HCI device and connection manager initialized
+[   39.140480] Bluetooth: HCI socket layer initialized
+[   39.140501] Bluetooth: L2CAP socket layer initialized
+[   39.140545] Bluetooth: SCO socket layer initialized
+[   39.212652] Bluetooth: HCI UART driver ver 2.3
+[   39.212682] Bluetooth: HCI UART protocol H4 registered
+[   39.212847] Bluetooth: HCI UART protocol Three-wire (H5) registered
+[   39.225106] Bluetooth: HCI UART protocol Broadcom registered
+[   44.513748] vc4-drm soc:gpu: bound 20400000.hvs (ops vc4_hvs_ops [vc4])
+[   44.518715] Registered IR keymap rc-cec
+[   44.519016] rc rc0: vc4 as /devices/platform/soc/20902000.hdmi/rc/rc0
+[   44.519325] input: vc4 as /devices/platform/soc/20902000.hdmi/rc/rc0/input1
+[   44.543677] vc4-drm soc:gpu: bound 20902000.hdmi (ops vc4_hdmi_ops [vc4])
+[   44.544129] vc4-drm soc:gpu: bound 20806000.vec (ops vc4_vec_ops [vc4])
+[   44.544637] vc4-drm soc:gpu: bound 20004000.txp (ops vc4_txp_ops [vc4])
+[   44.545131] vc4-drm soc:gpu: bound 20206000.pixelvalve (ops vc4_crtc_ops [vc4])
+[   44.545592] vc4-drm soc:gpu: bound 20207000.pixelvalve (ops vc4_crtc_ops [vc4])
+[   44.546060] vc4-drm soc:gpu: bound 20807000.pixelvalve (ops vc4_crtc_ops [vc4])
+[   44.546419] vc4-drm soc:gpu: bound 20c00000.v3d (ops vc4_v3d_ops [vc4])
+[   44.590612] [drm] Initialized vc4 0.0.0 20140616 for soc:gpu on minor 0
+[   44.710477] Console: switching to colour frame buffer device 240x67
+[   44.745631] vc4-drm soc:gpu: [drm] fb0: vc4drmfb frame buffer device
+[   47.770983] Bluetooth: BNEP (Ethernet Emulation) ver 1.3
+[   47.771010] Bluetooth: BNEP filters: protocol multicast
+[   47.771044] Bluetooth: BNEP socket layer initialized
+[   47.835324] imx477 10-001a: Device found is imx477
+[   47.983985] NET: Registered protocol family 38
+[   52.964549] brcmfmac: brcmf_cfg80211_set_power_mgmt: power save enabled
+[   54.693268] Bluetooth: RFCOMM TTY layer initialized
+[   54.693317] Bluetooth: RFCOMM socket layer initialized
+[   54.693381] Bluetooth: RFCOMM ver 1.11
+[   55.458349] IPv6: ADDRCONF(NETDEV_CHANGE): wlan0: link becomes ready
+[  140.253334] Indeed it is in host mode hprt0 = 00041901
+[  140.463494] usb 1-1: new low-speed USB device number 2 using dwc_otg
+[  140.465864] Indeed it is in host mode hprt0 = 00041901
+[  140.711374] usb 1-1: New USB device found, idVendor=04d9, idProduct=1400, bcdDevice= 1.43
+[  140.711408] usb 1-1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
+[  140.732732] input: HID 04d9:1400 as /devices/platform/soc/20980000.usb/usb1/1-1/1-1:1.0/0003:04D9:1400.0001/input/input2
+[  140.795002] hid-generic 0003:04D9:1400.0001: input,hidraw0: USB HID v1.10 Keyboard [HID 04d9:1400] on usb-20980000.usb-1/input0
+[  140.811205] input: HID 04d9:1400 Mouse as /devices/platform/soc/20980000.usb/usb1/1-1/1-1:1.1/0003:04D9:1400.0002/input/input3
+[  140.819119] input: HID 04d9:1400 Consumer Control as /devices/platform/soc/20980000.usb/usb1/1-1/1-1:1.1/0003:04D9:1400.0002/input/input4
+[  140.883963] input: HID 04d9:1400 System Control as /devices/platform/soc/20980000.usb/usb1/1-1/1-1:1.1/0003:04D9:1400.0002/input/input5
+[  140.887100] hid-generic 0003:04D9:1400.0002: input,hidraw1: USB HID v1.10 Mouse [HID 04d9:1400] on usb-20980000.usb-1/input1
+[  179.162910] Division by zero in kernel.
+[  179.162954] CPU: 0 PID: 959 Comm: libcamera-hello Tainted: G         C        5.10.63+ #1488
+[  179.162967] Hardware name: BCM2835
+[  179.162977] Backtrace: 
+[  179.163040] [<c08746c0>] (dump_backtrace) from [<c0874a40>] (show_stack+0x20/0x24)
+[  179.163168]  r7:c21e0020 r6:bf424280 r5:c21e1178 r4:c0a70ae0
+[  179.163204] [<c0874a20>] (show_stack) from [<c0877cb8>] (dump_stack+0x28/0x30)
+[  179.163228] [<c0877c90>] (dump_stack) from [<c0874840>] (__div0+0x20/0x28)
+[  179.163244]  r5:c21e1178 r4:c2ac04f8
+[  179.163270] [<c0874820>] (__div0) from [<c04f5afc>] (Ldiv0+0x8/0x10)
+[  179.163327] [<bf41f000>] (setup_mmal_port_format [bcm2835_isp]) from [<bf4202d4>] (bcm2835_isp_node_s_fmt+0x148/0x32c [bcm2835_isp])
+[  179.163343]  r5:c37ed700 r4:c21e1178
+[  179.163773] [<bf42018c>] (bcm2835_isp_node_s_fmt [bcm2835_isp]) from [<bf26c3e8>] (v4l_s_fmt+0x42c/0x43c [videodev])
+[  179.163799]  r8:c37c36c0 r7:bf422894 r6:c21e1188 r5:c22c89c0 r4:c37ed700
+[  179.164234] [<bf26bfbc>] (v4l_s_fmt [videodev]) from [<bf26cdd8>] (__video_do_ioctl+0x234/0x464 [videodev])
+[  179.164258]  r9:bf422894 r8:c21e14d0 r7:00000003 r6:bf26bfbc r5:c0cc5605 r4:c21e1188
+[  179.164688] [<bf26cba4>] (__video_do_ioctl [videodev]) from [<bf26d80c>] (video_usercopy+0x118/0x558 [videodev])
+[  179.164714]  r10:c37ed700 r9:c0bb3028 r8:c37ed700 r7:00000000 r6:00000000 r5:c0cc5605
+[  179.164726]  r4:c0cc5605
+[  179.165155] [<bf26d6f4>] (video_usercopy [videodev]) from [<bf26dc68>] (video_ioctl2+0x1c/0x24 [videodev])
+[  179.165178]  r10:00000012 r9:a867d38c r8:c0bb3028 r7:00000000 r6:c22c89c0 r5:c22c89c1
+[  179.165193]  r4:bf26dc4c
+[  179.165624] [<bf26dc4c>] (video_ioctl2 [videodev]) from [<bf265148>] (v4l2_ioctl+0x4c/0x64 [videodev])
+[  179.165858] [<bf2650fc>] (v4l2_ioctl [videodev]) from [<c020b678>] (sys_ioctl+0x1ac/0x88c)
+[  179.165876]  r5:c22c89c1 r4:c0cc5605
+[  179.165900] [<c020b4cc>] (sys_ioctl) from [<c0008240>] (ret_fast_syscall+0x0/0x28)
+[  179.165912] Exception stack(0xc22cbfa8 to 0xc22cbff0)
+[  179.165929] bfa0:                   a867d650 a89163c8 00000012 c0cc5605 a867d38c 00000000
+[  179.165946] bfc0: a867d650 a89163c8 a89163c8 00000036 a8915130 a867d650 01f281b0 a867d618
+[  179.165959] bfe0: b6e5bff4 a867d374 b6dffbf4 b6aab1ac
+[  179.165980]  r10:00000000 r9:c22ca000 r8:c00083e4 r7:00000036 r6:a89163c8 r5:a89163c8
+[  179.165992]  r4:a867d650
+[  181.523995] Division by zero in kernel.
+[  181.524036] CPU: 0 PID: 959 Comm: libcamera-hello Tainted: G         C        5.10.63+ #1488
+[  181.524049] Hardware name: BCM2835
+[  181.524060] Backtrace: 
+[  181.524124] [<c08746c0>] (dump_backtrace) from [<c0874a40>] (show_stack+0x20/0x24)
+[  181.524147]  r7:bf424280 r6:c0bb3028 r5:c21e1178 r4:c0a70ae0
+[  181.524171] [<c0874a20>] (show_stack) from [<c0877cb8>] (dump_stack+0x28/0x30)
+[  181.524194] [<c0877c90>] (dump_stack) from [<c0874840>] (__div0+0x20/0x28)
+[  181.524214]  r5:c21e1178 r4:c2ac04f8
+[  181.524241] [<c0874820>] (__div0) from [<c04f5afc>] (Ldiv0+0x8/0x10)
+[  181.524297] [<bf41f000>] (setup_mmal_port_format [bcm2835_isp]) from [<bf41fbb8>] (bcm2835_isp_node_queue_setup+0x90/0x1ec [bcm2835_isp])
+[  181.524313]  r5:c21e0020 r4:c21e1178
+[  181.524426] [<bf41fb28>] (bcm2835_isp_node_queue_setup [bcm2835_isp]) from [<bf36e7f8>] (vb2_core_reqbufs+0x12c/0x49c [videobuf2_common])
+[  181.524447]  r10:c0bb3028 r9:bf422894 r8:bf41fb28 r7:c22cbe3c r6:c0bb3028 r5:c21e1528
+[  181.524459]  r4:c21e14e8
+[  181.524572] [<bf36e6cc>] (vb2_core_reqbufs [videobuf2_common]) from [<bf39df84>] (vb2_ioctl_reqbufs+0x80/0xa8 [videobuf2_v4l2])
+[  181.524596]  r10:c0bb3028 r9:bf422894 r8:c21e14dc r7:c22c89c0 r6:c21e1188 r5:00000000
+[  181.524606]  r4:c22cbe3c
+[  181.525049] [<bf39df04>] (vb2_ioctl_reqbufs [videobuf2_v4l2]) from [<bf26c60c>] (v4l_reqbufs+0x50/0x54 [videodev])
+[  181.525071]  r7:bf422894 r6:c37c36c0 r5:c22c89c0 r4:c22cbe3c
+[  181.525507] [<bf26c5bc>] (v4l_reqbufs [videodev]) from [<bf26cdd8>] (__video_do_ioctl+0x234/0x464 [videodev])
+[  181.525529]  r7:00000003 r6:bf26c5bc r5:c0145608 r4:c21e1188
+[  181.525958] [<bf26cba4>] (__video_do_ioctl [videodev]) from [<bf26d80c>] (video_usercopy+0x118/0x558 [videodev])
+[  181.525980]  r10:00000000 r9:c0bb3028 r8:c22cbe3c r7:00000000 r6:00000000 r5:c0145608
+[  181.525993]  r4:c0145608
+[  181.526422] [<bf26d6f4>] (video_usercopy [videodev]) from [<bf26dc68>] (video_ioctl2+0x1c/0x24 [videodev])
+[  181.526507]  r10:00000012 r9:a867d3a4 r8:c0bb3028 r7:00000000 r6:c22c89c0 r5:c22c89c1
+[  181.526521]  r4:bf26dc4c
+[  181.526964] [<bf26dc4c>] (video_ioctl2 [videodev]) from [<bf265148>] (v4l2_ioctl+0x4c/0x64 [videodev])
+[  181.527210] [<bf2650fc>] (v4l2_ioctl [videodev]) from [<c020b678>] (sys_ioctl+0x1ac/0x88c)
+[  181.527229]  r5:c22c89c1 r4:c0145608
+[  181.527254] [<c020b4cc>] (sys_ioctl) from [<c0008240>] (ret_fast_syscall+0x0/0x28)
+[  181.527309] Exception stack(0xc22cbfa8 to 0xc22cbff0)
+[  181.527330] bfa0:                   a8915340 a89163c8 00000012 c0145608 a867d3a4 0000000d
+[  181.527348] bfc0: a8915340 a89163c8 00000004 00000036 00000001 00000000 a8914ddc 02148b78
+[  181.527361] bfe0: b6e5bff4 a867d38c b6dffbf4 b6aab1ac
+[  181.527380]  r10:00000000 r9:c22ca000 r8:c00083e4 r7:00000036 r6:00000004 r5:a89163c8
+[  181.527391]  r4:a8915340
+[  181.566115] Division by zero in kernel.
+[  181.566161] CPU: 0 PID: 959 Comm: libcamera-hello Tainted: G         C        5.10.63+ #1488
+[  181.566174] Hardware name: BCM2835
+[  181.566184] Backtrace: 
+[  181.566308] [<c08746c0>] (dump_backtrace) from [<c0874a40>] (show_stack+0x20/0x24)
+[  181.566331]  r7:bf424280 r6:c0bb3028 r5:c21e1178 r4:c0a70ae0
+[  181.566354] [<c0874a20>] (show_stack) from [<c0877cb8>] (dump_stack+0x28/0x30)
+[  181.566376] [<c0877c90>] (dump_stack) from [<c0874840>] (__div0+0x20/0x28)
+[  181.566391]  r5:c21e1178 r4:c2ac04f8
+[  181.566416] [<c0874820>] (__div0) from [<c04f5afc>] (Ldiv0+0x8/0x10)
+[  181.566472] [<bf41f000>] (setup_mmal_port_format [bcm2835_isp]) from [<bf41fbb8>] (bcm2835_isp_node_queue_setup+0x90/0x1ec [bcm2835_isp])
+[  181.566489]  r5:c21e0020 r4:c21e1178
+[  181.566600] [<bf41fb28>] (bcm2835_isp_node_queue_setup [bcm2835_isp]) from [<bf36e7f8>] (vb2_core_reqbufs+0x12c/0x49c [videobuf2_common])
+[  181.566623]  r10:c0bb3028 r9:bf422894 r8:bf41fb28 r7:c22cbe3c r6:c0bb3028 r5:c21e1528
+[  181.566634]  r4:c21e14e8
+[  181.566751] [<bf36e6cc>] (vb2_core_reqbufs [videobuf2_common]) from [<bf39df84>] (vb2_ioctl_reqbufs+0x80/0xa8 [videobuf2_v4l2])
+[  181.566774]  r10:c0bb3028 r9:bf422894 r8:c21e14dc r7:c22c89c0 r6:c21e1188 r5:00000000
+[  181.566786]  r4:c22cbe3c
+[  181.567228] [<bf39df04>] (vb2_ioctl_reqbufs [videobuf2_v4l2]) from [<bf26c60c>] (v4l_reqbufs+0x50/0x54 [videodev])
+[  181.567320]  r7:bf422894 r6:c37c36c0 r5:c22c89c0 r4:c22cbe3c
+[  181.567774] [<bf26c5bc>] (v4l_reqbufs [videodev]) from [<bf26cdd8>] (__video_do_ioctl+0x234/0x464 [videodev])
+[  181.567797]  r7:00000003 r6:bf26c5bc r5:c0145608 r4:c21e1188
+[  181.568234] [<bf26cba4>] (__video_do_ioctl [videodev]) from [<bf26d80c>] (video_usercopy+0x118/0x558 [videodev])
+[  181.568346]  r10:00000000 r9:c0bb3028 r8:c22cbe3c r7:00000000 r6:00000000 r5:c0145608
+[  181.568362]  r4:c0145608
+[  181.568820] [<bf26d6f4>] (video_usercopy [videodev]) from [<bf26dc68>] (video_ioctl2+0x1c/0x24 [videodev])
+[  181.568847]  r10:00000012 r9:a867d3f4 r8:c0bb3028 r7:00000000 r6:c22c89c0 r5:c22c89c1
+[  181.568858]  r4:bf26dc4c
+[  181.569295] [<bf26dc4c>] (video_ioctl2 [videodev]) from [<bf265148>] (v4l2_ioctl+0x4c/0x64 [videodev])
+[  181.569534] [<bf2650fc>] (v4l2_ioctl [videodev]) from [<c020b678>] (sys_ioctl+0x1ac/0x88c)
+[  181.569552]  r5:c22c89c1 r4:c0145608
+[  181.569575] [<c020b4cc>] (sys_ioctl) from [<c0008240>] (ret_fast_syscall+0x0/0x28)
+[  181.569589] Exception stack(0xc22cbfa8 to 0xc22cbff0)
+[  181.569606] bfa0:                   a89163c8 a89163c8 00000012 c0145608 a867d3f4 0000000d
+[  181.569622] bfc0: a89163c8 a89163c8 00000004 00000036 00000004 00000000 a8914ddc 02148b78
+[  181.569636] bfe0: b6e5bff4 a867d3dc b6dffbf4 b6aab1ac
+[  181.569654]  r10:00000000 r9:c22ca000 r8:c00083e4 r7:00000036 r6:00000004 r5:a89163c8
+[  181.569666]  r4:a89163c8
+[  182.189366] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8f500000
+[  182.189744] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8fa00000
+[  182.190006] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8ff00000
+[  182.190302] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x90400000
+[  182.194230] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8c900000
+[  182.194628] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8cb00000
+[  182.194898] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x90900000
+[  182.195158] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x90b00000
+[  182.198032] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd34000
+[  182.198406] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd38000
+[  182.198666] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd3c000
+[  182.198928] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd40000
+[  183.131728] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  183.135076] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8e100000
+[  183.161619] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  183.163027] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8e600000
+[  183.196378] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  183.197826] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8eb00000
+[  183.216080] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8cd00000
+[  183.216786] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8d200000
+[  183.217425] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8d700000
+[  183.218031] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8dc00000
+[  183.231120] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  183.232634] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8f000000
+[  183.264728] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  183.295830] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  183.329299] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  183.361181] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  183.407864] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  183.445361] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  183.487556] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  183.524989] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  183.574805] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  183.620087] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  184.219772] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  184.262666] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  184.343740] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  184.450934] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  184.526062] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  184.596253] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  184.657674] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  184.729246] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  184.793400] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  184.851297] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  184.892563] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  184.942540] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  184.986203] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  185.020647] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  185.063909] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  185.097159] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  185.130477] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  185.162431] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[  218.303532] usb 1-1: USB disconnect, device number 2
+[ 2376.522085] Division by zero in kernel.
+[ 2376.522124] CPU: 0 PID: 1343 Comm: libcamera-hello Tainted: G         C        5.10.63+ #1488
+[ 2376.522135] Hardware name: BCM2835
+[ 2376.522145] Backtrace: 
+[ 2376.522203] [<c08746c0>] (dump_backtrace) from [<c0874a40>] (show_stack+0x20/0x24)
+[ 2376.522222]  r7:c21e0020 r6:bf424280 r5:c21e1178 r4:c0a70ae0
+[ 2376.522244] [<c0874a20>] (show_stack) from [<c0877cb8>] (dump_stack+0x28/0x30)
+[ 2376.522263] [<c0877c90>] (dump_stack) from [<c0874840>] (__div0+0x20/0x28)
+[ 2376.522276]  r5:c21e1178 r4:c2ac04f8
+[ 2376.522300] [<c0874820>] (__div0) from [<c04f5afc>] (Ldiv0+0x8/0x10)
+[ 2376.522351] [<bf41f000>] (setup_mmal_port_format [bcm2835_isp]) from [<bf4202d4>] (bcm2835_isp_node_s_fmt+0x148/0x32c [bcm2835_isp])
+[ 2376.522366]  r5:c37ed500 r4:c21e1178
+[ 2376.522752] [<bf42018c>] (bcm2835_isp_node_s_fmt [bcm2835_isp]) from [<bf26c3e8>] (v4l_s_fmt+0x42c/0x43c [videodev])
+[ 2376.522774]  r8:c37e8cc0 r7:bf422894 r6:c21e1188 r5:c7fba0c0 r4:c37ed500
+[ 2376.523161] [<bf26bfbc>] (v4l_s_fmt [videodev]) from [<bf26cdd8>] (__video_do_ioctl+0x234/0x464 [videodev])
+[ 2376.523183]  r9:bf422894 r8:c21e14d0 r7:00000003 r6:bf26bfbc r5:c0cc5605 r4:c21e1188
+[ 2376.523570] [<bf26cba4>] (__video_do_ioctl [videodev]) from [<bf26d80c>] (video_usercopy+0x118/0x558 [videodev])
+[ 2376.523593]  r10:c37ed500 r9:c0bb3028 r8:c37ed500 r7:00000000 r6:00000000 r5:c0cc5605
+[ 2376.523603]  r4:c0cc5605
+[ 2376.523991] [<bf26d6f4>] (video_usercopy [videodev]) from [<bf26dc68>] (video_ioctl2+0x1c/0x24 [videodev])
+[ 2376.524012]  r10:00000011 r9:b1c9638c r8:c0bb3028 r7:00000000 r6:c7fba0c0 r5:c7fba0c1
+[ 2376.524023]  r4:bf26dc4c
+[ 2376.524410] [<bf26dc4c>] (video_ioctl2 [videodev]) from [<bf265148>] (v4l2_ioctl+0x4c/0x64 [videodev])
+[ 2376.524621] [<bf2650fc>] (v4l2_ioctl [videodev]) from [<c020b678>] (sys_ioctl+0x1ac/0x88c)
+[ 2376.524638]  r5:c7fba0c1 r4:c0cc5605
+[ 2376.524658] [<c020b4cc>] (sys_ioctl) from [<c0008240>] (ret_fast_syscall+0x0/0x28)
+[ 2376.524670] Exception stack(0xc7fbdfa8 to 0xc7fbdff0)
+[ 2376.524686] dfa0:                   b1c96650 b1316240 00000011 c0cc5605 b1c9638c 00000000
+[ 2376.524703] dfc0: b1c96650 b1316240 b1316240 00000036 b1314fa8 b1c96650 0136a2e8 b1c96618
+[ 2376.524716] dfe0: b6f36ff4 b1c96374 b6edabf4 b6b861ac
+[ 2376.524734]  r10:00000000 r9:c7fbc000 r8:c00083e4 r7:00000036 r6:b1316240 r5:b1316240
+[ 2376.524744]  r4:b1c96650
+[ 2377.121508] Division by zero in kernel.
+[ 2377.121547] CPU: 0 PID: 1343 Comm: libcamera-hello Tainted: G         C        5.10.63+ #1488
+[ 2377.121558] Hardware name: BCM2835
+[ 2377.121568] Backtrace: 
+[ 2377.121626] [<c08746c0>] (dump_backtrace) from [<c0874a40>] (show_stack+0x20/0x24)
+[ 2377.121646]  r7:bf424280 r6:c0bb3028 r5:c21e1178 r4:c0a70ae0
+[ 2377.121668] [<c0874a20>] (show_stack) from [<c0877cb8>] (dump_stack+0x28/0x30)
+[ 2377.121688] [<c0877c90>] (dump_stack) from [<c0874840>] (__div0+0x20/0x28)
+[ 2377.121701]  r5:c21e1178 r4:c2ac04f8
+[ 2377.121726] [<c0874820>] (__div0) from [<c04f5afc>] (Ldiv0+0x8/0x10)
+[ 2377.121776] [<bf41f000>] (setup_mmal_port_format [bcm2835_isp]) from [<bf41fbb8>] (bcm2835_isp_node_queue_setup+0x90/0x1ec [bcm2835_isp])
+[ 2377.121791]  r5:c21e0020 r4:c21e1178
+[ 2377.121894] [<bf41fb28>] (bcm2835_isp_node_queue_setup [bcm2835_isp]) from [<bf36e7f8>] (vb2_core_reqbufs+0x12c/0x49c [videobuf2_common])
+[ 2377.121915]  r10:c0bb3028 r9:bf422894 r8:bf41fb28 r7:c7fbde3c r6:c0bb3028 r5:c21e1528
+[ 2377.121926]  r4:c21e14e8
+[ 2377.122028] [<bf36e6cc>] (vb2_core_reqbufs [videobuf2_common]) from [<bf39df84>] (vb2_ioctl_reqbufs+0x80/0xa8 [videobuf2_v4l2])
+[ 2377.122049]  r10:c0bb3028 r9:bf422894 r8:c21e14dc r7:c7fba0c0 r6:c21e1188 r5:00000000
+[ 2377.122060]  r4:c7fbde3c
+[ 2377.122460] [<bf39df04>] (vb2_ioctl_reqbufs [videobuf2_v4l2]) from [<bf26c60c>] (v4l_reqbufs+0x50/0x54 [videodev])
+[ 2377.122482]  r7:bf422894 r6:c37e8cc0 r5:c7fba0c0 r4:c7fbde3c
+[ 2377.122870] [<bf26c5bc>] (v4l_reqbufs [videodev]) from [<bf26cdd8>] (__video_do_ioctl+0x234/0x464 [videodev])
+[ 2377.122889]  r7:00000003 r6:bf26c5bc r5:c0145608 r4:c21e1188
+[ 2377.123277] [<bf26cba4>] (__video_do_ioctl [videodev]) from [<bf26d80c>] (video_usercopy+0x118/0x558 [videodev])
+[ 2377.123298]  r10:00000000 r9:c0bb3028 r8:c7fbde3c r7:00000000 r6:00000000 r5:c0145608
+[ 2377.123308]  r4:c0145608
+[ 2377.123696] [<bf26d6f4>] (video_usercopy [videodev]) from [<bf26dc68>] (video_ioctl2+0x1c/0x24 [videodev])
+[ 2377.123717]  r10:00000011 r9:b1c963a4 r8:c0bb3028 r7:00000000 r6:c7fba0c0 r5:c7fba0c1
+[ 2377.123728]  r4:bf26dc4c
+[ 2377.124115] [<bf26dc4c>] (video_ioctl2 [videodev]) from [<bf265148>] (v4l2_ioctl+0x4c/0x64 [videodev])
+[ 2377.124326] [<bf2650fc>] (v4l2_ioctl [videodev]) from [<c020b678>] (sys_ioctl+0x1ac/0x88c)
+[ 2377.124342]  r5:c7fba0c1 r4:c0145608
+[ 2377.124362] [<c020b4cc>] (sys_ioctl) from [<c0008240>] (ret_fast_syscall+0x0/0x28)
+[ 2377.124374] Exception stack(0xc7fbdfa8 to 0xc7fbdff0)
+[ 2377.124390] dfa0:                   b13151b8 b1316240 00000011 c0145608 b1c963a4 0000000d
+[ 2377.124406] dfc0: b13151b8 b1316240 00000004 00000036 00000001 00000000 b1314c54 0136aa60
+[ 2377.124419] dfe0: b6f36ff4 b1c9638c b6edabf4 b6b861ac
+[ 2377.124438]  r10:00000000 r9:c7fbc000 r8:c00083e4 r7:00000036 r6:00000004 r5:b1316240
+[ 2377.124448]  r4:b13151b8
+[ 2377.141872] Division by zero in kernel.
+[ 2377.141909] CPU: 0 PID: 1343 Comm: libcamera-hello Tainted: G         C        5.10.63+ #1488
+[ 2377.141921] Hardware name: BCM2835
+[ 2377.141931] Backtrace: 
+[ 2377.141989] [<c08746c0>] (dump_backtrace) from [<c0874a40>] (show_stack+0x20/0x24)
+[ 2377.142008]  r7:bf424280 r6:c0bb3028 r5:c21e1178 r4:c0a70ae0
+[ 2377.142030] [<c0874a20>] (show_stack) from [<c0877cb8>] (dump_stack+0x28/0x30)
+[ 2377.142050] [<c0877c90>] (dump_stack) from [<c0874840>] (__div0+0x20/0x28)
+[ 2377.142062]  r5:c21e1178 r4:c2ac04f8
+[ 2377.142087] [<c0874820>] (__div0) from [<c04f5afc>] (Ldiv0+0x8/0x10)
+[ 2377.142139] [<bf41f000>] (setup_mmal_port_format [bcm2835_isp]) from [<bf41fbb8>] (bcm2835_isp_node_queue_setup+0x90/0x1ec [bcm2835_isp])
+[ 2377.142153]  r5:c21e0020 r4:c21e1178
+[ 2377.142257] [<bf41fb28>] (bcm2835_isp_node_queue_setup [bcm2835_isp]) from [<bf36e7f8>] (vb2_core_reqbufs+0x12c/0x49c [videobuf2_common])
+[ 2377.142279]  r10:c0bb3028 r9:bf422894 r8:bf41fb28 r7:c7fbde3c r6:c0bb3028 r5:c21e1528
+[ 2377.142290]  r4:c21e14e8
+[ 2377.142393] [<bf36e6cc>] (vb2_core_reqbufs [videobuf2_common]) from [<bf39df84>] (vb2_ioctl_reqbufs+0x80/0xa8 [videobuf2_v4l2])
+[ 2377.142414]  r10:c0bb3028 r9:bf422894 r8:c21e14dc r7:c7fba0c0 r6:c21e1188 r5:00000000
+[ 2377.142425]  r4:c7fbde3c
+[ 2377.142825] [<bf39df04>] (vb2_ioctl_reqbufs [videobuf2_v4l2]) from [<bf26c60c>] (v4l_reqbufs+0x50/0x54 [videodev])
+[ 2377.142845]  r7:bf422894 r6:c37e8cc0 r5:c7fba0c0 r4:c7fbde3c
+[ 2377.143233] [<bf26c5bc>] (v4l_reqbufs [videodev]) from [<bf26cdd8>] (__video_do_ioctl+0x234/0x464 [videodev])
+[ 2377.143251]  r7:00000003 r6:bf26c5bc r5:c0145608 r4:c21e1188
+[ 2377.143639] [<bf26cba4>] (__video_do_ioctl [videodev]) from [<bf26d80c>] (video_usercopy+0x118/0x558 [videodev])
+[ 2377.143660]  r10:00000000 r9:c0bb3028 r8:c7fbde3c r7:00000000 r6:00000000 r5:c0145608
+[ 2377.143671]  r4:c0145608
+[ 2377.144058] [<bf26d6f4>] (video_usercopy [videodev]) from [<bf26dc68>] (video_ioctl2+0x1c/0x24 [videodev])
+[ 2377.144079]  r10:00000011 r9:b1c963f4 r8:c0bb3028 r7:00000000 r6:c7fba0c0 r5:c7fba0c1
+[ 2377.144090]  r4:bf26dc4c
+[ 2377.144477] [<bf26dc4c>] (video_ioctl2 [videodev]) from [<bf265148>] (v4l2_ioctl+0x4c/0x64 [videodev])
+[ 2377.144688] [<bf2650fc>] (v4l2_ioctl [videodev]) from [<c020b678>] (sys_ioctl+0x1ac/0x88c)
+[ 2377.144705]  r5:c7fba0c1 r4:c0145608
+[ 2377.144724] [<c020b4cc>] (sys_ioctl) from [<c0008240>] (ret_fast_syscall+0x0/0x28)
+[ 2377.144736] Exception stack(0xc7fbdfa8 to 0xc7fbdff0)
+[ 2377.144753] dfa0:                   b1316240 b1316240 00000011 c0145608 b1c963f4 0000000d
+[ 2377.144769] dfc0: b1316240 b1316240 00000004 00000036 00000004 00000000 b1314c54 0136aa60
+[ 2377.144782] dfe0: b6f36ff4 b1c963dc b6edabf4 b6b861ac
+[ 2377.144801]  r10:00000000 r9:c7fbc000 r8:c00083e4 r7:00000036 r6:00000004 r5:b1316240
+[ 2377.144811]  r4:b1316240
+[ 2377.737112] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8fe00000
+[ 2377.737404] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x90300000
+[ 2377.737648] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x90c00000
+[ 2377.737947] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x91100000
+[ 2377.745623] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8c900000
+[ 2377.745943] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8cb00000
+[ 2377.746187] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8e100000
+[ 2377.746420] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8f400000
+[ 2377.749190] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd3c000
+[ 2377.749479] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd40000
+[ 2377.749745] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd44000
+[ 2377.749986] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd48000
+[ 2377.766148] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2377.767308] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8e500000
+[ 2377.801570] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2377.803076] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8ea00000
+[ 2377.846602] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2377.853041] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8ef00000
+[ 2377.871193] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8cd00000
+[ 2377.871801] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8d200000
+[ 2377.872393] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8d700000
+[ 2377.872976] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8dc00000
+[ 2377.891631] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2377.895593] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8f900000
+[ 2377.934100] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2377.965941] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.002988] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.034563] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.077406] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.110585] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.144638] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.182645] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.221269] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.248756] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.291280] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.318834] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.349632] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.387485] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.419645] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.466735] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.494201] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.530019] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.576608] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.611680] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.639428] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.683301] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.721724] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.749216] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.791212] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.824141] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.862086] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.889907] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.931745] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.959441] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2378.996778] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.024273] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.059500] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.089493] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.119567] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.166995] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.194464] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.230037] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.281589] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.321152] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.348674] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.385601] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.426477] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.454048] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.489744] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.538265] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.571581] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.611572] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.639316] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.681230] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.721337] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.748863] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.791109] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.818612] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.856533] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.894004] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.928408] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.961671] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2379.989081] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.031588] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.072023] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.111521] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.139249] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.181119] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.214422] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.254147] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.296613] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.324137] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.359345] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.389279] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.419901] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.464437] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.495421] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.523226] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.572009] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.604318] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.641490] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.681459] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.716585] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.751046] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.791018] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.818565] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.849393] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.891008] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.918507] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.953876] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2380.991059] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.031491] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.063709] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.091016] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.142900] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.181411] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.221006] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.250693] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.290994] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.323901] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.361443] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.389204] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.419297] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.449367] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.487123] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.519542] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.566024] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.593602] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.629827] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.673802] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.711882] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.750930] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.784309] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.823709] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.861109] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.888906] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.919198] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.961415] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2381.996478] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2382.030554] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2382.058117] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2382.089054] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2382.119217] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2382.149366] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2382.194281] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2382.221823] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2382.271837] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2382.311311] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2382.339051] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2382.382748] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2382.416331] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2382.450916] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2382.490877] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2382.523744] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2382.561179] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2382.588971] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2382.619273] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2382.663636] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2382.700733] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2382.734352] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2382.762462] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2382.827840] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd28000
+[ 2672.964852] Indeed it is in host mode hprt0 = 00041901
+[ 2673.174722] usb 1-1: new low-speed USB device number 3 using dwc_otg
+[ 2673.177095] Indeed it is in host mode hprt0 = 00041901
+[ 2673.422725] usb 1-1: New USB device found, idVendor=04d9, idProduct=1400, bcdDevice= 1.43
+[ 2673.422756] usb 1-1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
+[ 2673.446730] input: HID 04d9:1400 as /devices/platform/soc/20980000.usb/usb1/1-1/1-1:1.0/0003:04D9:1400.0003/input/input6
+[ 2673.516430] hid-generic 0003:04D9:1400.0003: input,hidraw0: USB HID v1.10 Keyboard [HID 04d9:1400] on usb-20980000.usb-1/input0
+[ 2673.531796] input: HID 04d9:1400 Mouse as /devices/platform/soc/20980000.usb/usb1/1-1/1-1:1.1/0003:04D9:1400.0004/input/input7
+[ 2673.538141] input: HID 04d9:1400 Consumer Control as /devices/platform/soc/20980000.usb/usb1/1-1/1-1:1.1/0003:04D9:1400.0004/input/input8
+[ 2673.605484] input: HID 04d9:1400 System Control as /devices/platform/soc/20980000.usb/usb1/1-1/1-1:1.1/0003:04D9:1400.0004/input/input9
+[ 2673.606341] hid-generic 0003:04D9:1400.0004: input,hidraw1: USB HID v1.10 Mouse [HID 04d9:1400] on usb-20980000.usb-1/input1
+[ 2710.246603] Division by zero in kernel.
+[ 2710.246647] CPU: 0 PID: 1538 Comm: libcamera-hello Tainted: G         C        5.10.63+ #1488
+[ 2710.246660] Hardware name: BCM2835
+[ 2710.246669] Backtrace: 
+[ 2710.246733] [<c08746c0>] (dump_backtrace) from [<c0874a40>] (show_stack+0x20/0x24)
+[ 2710.246755]  r7:c21e0020 r6:bf424280 r5:c21e1178 r4:c0a70ae0
+[ 2710.246779] [<c0874a20>] (show_stack) from [<c0877cb8>] (dump_stack+0x28/0x30)
+[ 2710.246801] [<c0877c90>] (dump_stack) from [<c0874840>] (__div0+0x20/0x28)
+[ 2710.246816]  r5:c21e1178 r4:c2ac04f8
+[ 2710.246842] [<c0874820>] (__div0) from [<c04f5afc>] (Ldiv0+0x8/0x10)
+[ 2710.246899] [<bf41f000>] (setup_mmal_port_format [bcm2835_isp]) from [<bf4202d4>] (bcm2835_isp_node_s_fmt+0x148/0x32c [bcm2835_isp])
+[ 2710.246914]  r5:c37ed200 r4:c21e1178
+[ 2710.247348] [<bf42018c>] (bcm2835_isp_node_s_fmt [bcm2835_isp]) from [<bf26c3e8>] (v4l_s_fmt+0x42c/0x43c [videodev])
+[ 2710.247373]  r8:c2b11cc0 r7:bf422894 r6:c21e1188 r5:c29a8300 r4:c37ed200
+[ 2710.247807] [<bf26bfbc>] (v4l_s_fmt [videodev]) from [<bf26cdd8>] (__video_do_ioctl+0x234/0x464 [videodev])
+[ 2710.247832]  r9:bf422894 r8:c21e14d0 r7:00000003 r6:bf26bfbc r5:c0cc5605 r4:c21e1188
+[ 2710.248263] [<bf26cba4>] (__video_do_ioctl [videodev]) from [<bf26d80c>] (video_usercopy+0x118/0x558 [videodev])
+[ 2710.248287]  r10:c37ed200 r9:c0bb3028 r8:c37ed200 r7:00000000 r6:00000000 r5:c0cc5605
+[ 2710.248299]  r4:c0cc5605
+[ 2710.248729] [<bf26d6f4>] (video_usercopy [videodev]) from [<bf26dc68>] (video_ioctl2+0x1c/0x24 [videodev])
+[ 2710.248751]  r10:00000012 r9:a867d38c r8:c0bb3028 r7:00000000 r6:c29a8300 r5:c29a8301
+[ 2710.248763]  r4:bf26dc4c
+[ 2710.249184] [<bf26dc4c>] (video_ioctl2 [videodev]) from [<bf265148>] (v4l2_ioctl+0x4c/0x64 [videodev])
+[ 2710.249409] [<bf2650fc>] (v4l2_ioctl [videodev]) from [<c020b678>] (sys_ioctl+0x1ac/0x88c)
+[ 2710.249427]  r5:c29a8301 r4:c0cc5605
+[ 2710.249447] [<c020b4cc>] (sys_ioctl) from [<c0008240>] (ret_fast_syscall+0x0/0x28)
+[ 2710.249460] Exception stack(0xc27a5fa8 to 0xc27a5ff0)
+[ 2710.249476] 5fa0:                   a867d650 a89163c8 00000012 c0cc5605 a867d38c 00000000
+[ 2710.249493] 5fc0: a867d650 a89163c8 a89163c8 00000036 a8915130 a867d650 000b9160 a867d618
+[ 2710.249506] 5fe0: b6e7dff4 a867d374 b6e21bf4 b6acd1ac
+[ 2710.249525]  r10:00000000 r9:c27a4000 r8:c00083e4 r7:00000036 r6:a89163c8 r5:a89163c8
+[ 2710.249535]  r4:a867d650
+[ 2710.865380] Division by zero in kernel.
+[ 2710.865421] CPU: 0 PID: 1538 Comm: libcamera-hello Tainted: G         C        5.10.63+ #1488
+[ 2710.865434] Hardware name: BCM2835
+[ 2710.865445] Backtrace: 
+[ 2710.865509] [<c08746c0>] (dump_backtrace) from [<c0874a40>] (show_stack+0x20/0x24)
+[ 2710.865529]  r7:bf424280 r6:c0bb3028 r5:c21e1178 r4:c0a70ae0
+[ 2710.865553] [<c0874a20>] (show_stack) from [<c0877cb8>] (dump_stack+0x28/0x30)
+[ 2710.865574] [<c0877c90>] (dump_stack) from [<c0874840>] (__div0+0x20/0x28)
+[ 2710.865588]  r5:c21e1178 r4:c2ac04f8
+[ 2710.865616] [<c0874820>] (__div0) from [<c04f5afc>] (Ldiv0+0x8/0x10)
+[ 2710.865673] [<bf41f000>] (setup_mmal_port_format [bcm2835_isp]) from [<bf41fbb8>] (bcm2835_isp_node_queue_setup+0x90/0x1ec [bcm2835_isp])
+[ 2710.865689]  r5:c21e0020 r4:c21e1178
+[ 2710.865803] [<bf41fb28>] (bcm2835_isp_node_queue_setup [bcm2835_isp]) from [<bf36e7f8>] (vb2_core_reqbufs+0x12c/0x49c [videobuf2_common])
+[ 2710.865826]  r10:c0bb3028 r9:bf422894 r8:bf41fb28 r7:c27a5e3c r6:c0bb3028 r5:c21e1528
+[ 2710.865837]  r4:c21e14e8
+[ 2710.865952] [<bf36e6cc>] (vb2_core_reqbufs [videobuf2_common]) from [<bf39df84>] (vb2_ioctl_reqbufs+0x80/0xa8 [videobuf2_v4l2])
+[ 2710.865972]  r10:c0bb3028 r9:bf422894 r8:c21e14dc r7:c29a8300 r6:c21e1188 r5:00000000
+[ 2710.865984]  r4:c27a5e3c
+[ 2710.866422] [<bf39df04>] (vb2_ioctl_reqbufs [videobuf2_v4l2]) from [<bf26c60c>] (v4l_reqbufs+0x50/0x54 [videodev])
+[ 2710.866443]  r7:bf422894 r6:c2b11cc0 r5:c29a8300 r4:c27a5e3c
+[ 2710.866845] [<bf26c5bc>] (v4l_reqbufs [videodev]) from [<bf26cdd8>] (__video_do_ioctl+0x234/0x464 [videodev])
+[ 2710.866864]  r7:00000003 r6:bf26c5bc r5:c0145608 r4:c21e1188
+[ 2710.867285] [<bf26cba4>] (__video_do_ioctl [videodev]) from [<bf26d80c>] (video_usercopy+0x118/0x558 [videodev])
+[ 2710.867309]  r10:00000000 r9:c0bb3028 r8:c27a5e3c r7:00000000 r6:00000000 r5:c0145608
+[ 2710.867320]  r4:c0145608
+[ 2710.867747] [<bf26d6f4>] (video_usercopy [videodev]) from [<bf26dc68>] (video_ioctl2+0x1c/0x24 [videodev])
+[ 2710.867771]  r10:00000012 r9:a867d3a4 r8:c0bb3028 r7:00000000 r6:c29a8300 r5:c29a8301
+[ 2710.867782]  r4:bf26dc4c
+[ 2710.868208] [<bf26dc4c>] (video_ioctl2 [videodev]) from [<bf265148>] (v4l2_ioctl+0x4c/0x64 [videodev])
+[ 2710.868441] [<bf2650fc>] (v4l2_ioctl [videodev]) from [<c020b678>] (sys_ioctl+0x1ac/0x88c)
+[ 2710.868460]  r5:c29a8301 r4:c0145608
+[ 2710.868480] [<c020b4cc>] (sys_ioctl) from [<c0008240>] (ret_fast_syscall+0x0/0x28)
+[ 2710.868494] Exception stack(0xc27a5fa8 to 0xc27a5ff0)
+[ 2710.868511] 5fa0:                   a8915340 a89163c8 00000012 c0145608 a867d3a4 0000000d
+[ 2710.868528] 5fc0: a8915340 a89163c8 00000004 00000036 00000001 00000000 a8914ddc 002d9ba8
+[ 2710.868541] 5fe0: b6e7dff4 a867d38c b6e21bf4 b6acd1ac
+[ 2710.868560]  r10:00000000 r9:c27a4000 r8:c00083e4 r7:00000036 r6:00000004 r5:a89163c8
+[ 2710.868571]  r4:a8915340
+[ 2710.885498] Division by zero in kernel.
+[ 2710.885540] CPU: 0 PID: 1538 Comm: libcamera-hello Tainted: G         C        5.10.63+ #1488
+[ 2710.885553] Hardware name: BCM2835
+[ 2710.885563] Backtrace: 
+[ 2710.885625] [<c08746c0>] (dump_backtrace) from [<c0874a40>] (show_stack+0x20/0x24)
+[ 2710.885647]  r7:bf424280 r6:c0bb3028 r5:c21e1178 r4:c0a70ae0
+[ 2710.885670] [<c0874a20>] (show_stack) from [<c0877cb8>] (dump_stack+0x28/0x30)
+[ 2710.885692] [<c0877c90>] (dump_stack) from [<c0874840>] (__div0+0x20/0x28)
+[ 2710.885706]  r5:c21e1178 r4:c2ac04f8
+[ 2710.885732] [<c0874820>] (__div0) from [<c04f5afc>] (Ldiv0+0x8/0x10)
+[ 2710.885787] [<bf41f000>] (setup_mmal_port_format [bcm2835_isp]) from [<bf41fbb8>] (bcm2835_isp_node_queue_setup+0x90/0x1ec [bcm2835_isp])
+[ 2710.885803]  r5:c21e0020 r4:c21e1178
+[ 2710.885918] [<bf41fb28>] (bcm2835_isp_node_queue_setup [bcm2835_isp]) from [<bf36e7f8>] (vb2_core_reqbufs+0x12c/0x49c [videobuf2_common])
+[ 2710.885940]  r10:c0bb3028 r9:bf422894 r8:bf41fb28 r7:c27a5e3c r6:c0bb3028 r5:c21e1528
+[ 2710.885952]  r4:c21e14e8
+[ 2710.886065] [<bf36e6cc>] (vb2_core_reqbufs [videobuf2_common]) from [<bf39df84>] (vb2_ioctl_reqbufs+0x80/0xa8 [videobuf2_v4l2])
+[ 2710.886087]  r10:c0bb3028 r9:bf422894 r8:c21e14dc r7:c29a8300 r6:c21e1188 r5:00000000
+[ 2710.886098]  r4:c27a5e3c
+[ 2710.886551] [<bf39df04>] (vb2_ioctl_reqbufs [videobuf2_v4l2]) from [<bf26c60c>] (v4l_reqbufs+0x50/0x54 [videodev])
+[ 2710.886631]  r7:bf422894 r6:c2b11cc0 r5:c29a8300 r4:c27a5e3c
+[ 2710.887074] [<bf26c5bc>] (v4l_reqbufs [videodev]) from [<bf26cdd8>] (__video_do_ioctl+0x234/0x464 [videodev])
+[ 2710.887098]  r7:00000003 r6:bf26c5bc r5:c0145608 r4:c21e1188
+[ 2710.887531] [<bf26cba4>] (__video_do_ioctl [videodev]) from [<bf26d80c>] (video_usercopy+0x118/0x558 [videodev])
+[ 2710.887555]  r10:00000000 r9:c0bb3028 r8:c27a5e3c r7:00000000 r6:00000000 r5:c0145608
+[ 2710.887568]  r4:c0145608
+[ 2710.887998] [<bf26d6f4>] (video_usercopy [videodev]) from [<bf26dc68>] (video_ioctl2+0x1c/0x24 [videodev])
+[ 2710.888022]  r10:00000012 r9:a867d3f4 r8:c0bb3028 r7:00000000 r6:c29a8300 r5:c29a8301
+[ 2710.888033]  r4:bf26dc4c
+[ 2710.888463] [<bf26dc4c>] (video_ioctl2 [videodev]) from [<bf265148>] (v4l2_ioctl+0x4c/0x64 [videodev])
+[ 2710.888697] [<bf2650fc>] (v4l2_ioctl [videodev]) from [<c020b678>] (sys_ioctl+0x1ac/0x88c)
+[ 2710.888717]  r5:c29a8301 r4:c0145608
+[ 2710.888738] [<c020b4cc>] (sys_ioctl) from [<c0008240>] (ret_fast_syscall+0x0/0x28)
+[ 2710.888752] Exception stack(0xc27a5fa8 to 0xc27a5ff0)
+[ 2710.888769] 5fa0:                   a89163c8 a89163c8 00000012 c0145608 a867d3f4 0000000d
+[ 2710.888785] 5fc0: a89163c8 a89163c8 00000004 00000036 00000004 00000000 a8914ddc 002d9ba8
+[ 2710.888800] 5fe0: b6e7dff4 a867d3dc b6e21bf4 b6acd1ac
+[ 2710.888819]  r10:00000000 r9:c27a4000 r8:c00083e4 r7:00000036 r6:00000004 r5:a89163c8
+[ 2710.888831]  r4:a89163c8
+[ 2711.564980] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8f700000
+[ 2711.565490] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8fc00000
+[ 2711.565768] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x90100000
+[ 2711.566056] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x90600000
+[ 2711.570575] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8c900000
+[ 2711.570902] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8cb00000
+[ 2711.571170] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8e600000
+[ 2711.571430] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x90c00000
+[ 2711.574370] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd3c000
+[ 2711.574698] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd40000
+[ 2711.574966] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd44000
+[ 2711.582185] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd48000
+[ 2711.620119] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2711.621513] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8e100000
+[ 2711.644895] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2711.651890] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8e800000
+[ 2711.691621] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2711.693386] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8ed00000
+[ 2711.714527] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8cd00000
+[ 2711.717825] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8d200000
+[ 2711.718595] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8d700000
+[ 2711.719263] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8dc00000
+[ 2711.750920] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2711.752703] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8f200000
+[ 2711.793943] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2711.838092] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2711.880595] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2711.924594] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2711.980448] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2712.048928] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2712.118900] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2712.206187] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2712.284886] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2712.360073] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2712.431394] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2712.496026] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2712.580915] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2712.689458] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2712.728915] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2712.764152] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2712.825589] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2712.861049] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2712.901665] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2712.951012] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2712.988955] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2713.042837] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2713.126154] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2713.196325] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2713.287484] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2713.335865] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2713.412000] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2713.504562] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+[ 2713.565880] vc_sm_cma_import_dmabuf_internal: Expecting an uncached alias for dma_addr 0x8bd20000
+
+** sudo vcdbg log msg **
+001359.031: brfs: File read: /mfs/sd/config.txt
+001359.995: brfs: File read: 2155 bytes
+001443.415: brfs: File read: /mfs/sd/config.txt
+001444.306: gpioman: gpioman_get_pin_num: pin LEDS_PWR_OK not defined
+002427.692: gpioman: gpioman_get_pin_num: pin LEDS_PWR_OK not defined
+002427.744: *** Restart logging
+002427.770: brfs: File read: 2155 bytes
+002460.060: HDMI0: hdmi_pixel_encoding: 162000000
+002465.385: dtb_file 'bcm2708-rpi-zero-w.dtb'
+002471.752: brfs: File read: /mfs/sd/bcm2708-rpi-zero-w.dtb
+002471.776: Loading 'bcm2708-rpi-zero-w.dtb' to 0x100 size 0x69cc
+002484.788: brfs: File read: 27084 bytes
+002500.208: brfs: File read: /mfs/sd/overlays/overlay_map.dtb
+002564.967: Found camera 'imx477'
+002565.687: brfs: File read: 1667 bytes
+002576.397: brfs: File read: /mfs/sd/overlays/imx477.dtbo
+002599.727: Loaded overlay 'imx477'
+002698.446: brfs: File read: 2897 bytes
+002704.116: brfs: File read: /mfs/sd/config.txt
+002704.476: dtparam: audio=on
+002715.792: brfs: File read: 2155 bytes
+002725.729: brfs: File read: /mfs/sd/overlays/imx477.dtbo
+002750.060: Loaded overlay 'imx477'
+002817.483: brfs: File read: 2897 bytes
+002834.930: brfs: File read: /mfs/sd/overlays/vc4-kms-v3d.dtbo
+002884.585: Loaded overlay 'vc4-kms-v3d'
+003006.774: brfs: File read: 2721 bytes
+003011.357: brfs: File read: /mfs/sd/cmdline.txt
+003011.390: Read command line from file 'cmdline.txt':
+003011.408: 'console=serial0,115200 console=tty1 root=PARTUUID=da51e197-02 rootfstype=ext4 fsck.repair=yes rootwait'
+003393.556: gpioman: gpioman_get_pin_num: pin EMMC_ENABLE not defined
+003417.424: brfs: File read: 103 bytes
+003833.865: brfs: File read: /mfs/sd/kernel.img
+003833.889: Loading 'kernel.img' to 0x8000 size 0x5ba6f8
+003833.920: Device tree loaded to 0x1bfe8c00 (size 0x7337)
+003838.568: gpioman: gpioman_get_pin_num: pin SDCARD_CONTROL_POWER not defined
+008855.417: vchiq_core: vchiq_init_state: slot_zero = 0x8bd80000, is_master = 1
+008865.349: TV service:host side not connected, dropping notification 0x00000002, 0x00000001, 0x00000010
+
+** sudo vcdbg log assert **
+No messages available
+
+** sudo vcdbg log ex **
+No exceptions found
+
+--------------------------------------------------------------------------------
+Memory
+--------------------------------------------------------------------------------
+** cat /proc/meminfo **
+MemTotal:         439960 kB
+MemFree:          167036 kB
+MemAvailable:     262428 kB
+Buffers:           13672 kB
+Cached:           130096 kB
+SwapCached:         7996 kB
+Active:           108268 kB
+Inactive:         114464 kB
+Active(anon):      13104 kB
+Inactive(anon):    74376 kB
+Active(file):      95164 kB
+Inactive(file):    40088 kB
+Unevictable:          16 kB
+Mlocked:              16 kB
+SwapTotal:        102396 kB
+SwapFree:          29180 kB
+Dirty:              1396 kB
+Writeback:             0 kB
+AnonPages:         73052 kB
+Mapped:            72496 kB
+Shmem:              8516 kB
+KReclaimable:      10388 kB
+Slab:              22984 kB
+SReclaimable:      10388 kB
+SUnreclaim:        12596 kB
+KernelStack:        1712 kB
+PageTables:         4736 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:      322376 kB
+Committed_AS:    1212624 kB
+VmallocTotal:     573440 kB
+VmallocUsed:        5628 kB
+VmallocChunk:          0 kB
+Percpu:               96 kB
+CmaTotal:         262144 kB
+CmaFree:           73520 kB
+
+** sudo cat /sys/kernel/debug/dma_buf/bufinfo **
+
+Dma-buf Objects:
+size    	flags   	mode    	count   	exp_name	ino     
+00032768	00000002	00080007	00000001	heap_helpers	00020640	ls_grid
+	Attached Devices:
+Total 0 devices attached
+
+
+Total 1 objects, 32768 bytes
+
+** sudo cat /sys/kernel/debug/vcsm-cma/state **
+
+VC-ServiceHandle     358c05e8
+
+Resources
+
+Resource                d4511714
+           NAME         sm-host-resource
+           SIZE         32768
+           DMABUF       5a70bbef
+           ATTACH       00000000
+           SGT          00000000
+           DMA_ADDR     0x8bd20000
+           VC_HANDLE     c0000011
+           VC_MAPPING    2
+
+
+Total resource count:   1
+
+
+--------------------------------------------------------------------------------
+Media Devices
+--------------------------------------------------------------------------------
+** media-ctl -d 0 -p **
+Media controller API version 5.10.63
+
+Media device information
+------------------------
+driver          bcm2835-isp
+model           bcm2835-isp
+serial          
+bus info        platform:bcm2835-isp
+hw revision     0x0
+driver version  5.10.63
+
+Device topology
+- entity 1: bcm2835_isp0 (4 pads, 4 links)
+            type Node subtype Unknown flags 0
+	pad0: Sink
+		<- "bcm2835-isp0-output0":0 [ENABLED,IMMUTABLE]
+	pad1: Source
+		-> "bcm2835-isp0-capture1":0 [ENABLED,IMMUTABLE]
+	pad2: Source
+		-> "bcm2835-isp0-capture2":0 [ENABLED,IMMUTABLE]
+	pad3: Source
+		-> "bcm2835-isp0-capture3":0 [ENABLED,IMMUTABLE]
+
+- entity 6: bcm2835-isp0-output0 (1 pad, 1 link)
+            type Node subtype V4L flags 0
+            device node name /dev/video13
+	pad0: Source
+		-> "bcm2835_isp0":0 [ENABLED,IMMUTABLE]
+
+- entity 12: bcm2835-isp0-capture1 (1 pad, 1 link)
+             type Node subtype V4L flags 0
+             device node name /dev/video14
+	pad0: Sink
+		<- "bcm2835_isp0":1 [ENABLED,IMMUTABLE]
+
+- entity 18: bcm2835-isp0-capture2 (1 pad, 1 link)
+             type Node subtype V4L flags 0
+             device node name /dev/video15
+	pad0: Sink
+		<- "bcm2835_isp0":2 [ENABLED,IMMUTABLE]
+
+- entity 24: bcm2835-isp0-capture3 (1 pad, 1 link)
+             type Node subtype V4L flags 0
+             device node name /dev/video16
+	pad0: Sink
+		<- "bcm2835_isp0":3 [ENABLED,IMMUTABLE]
+
+
+** media-ctl -d 1 -p **
+Media controller API version 5.10.63
+
+Media device information
+------------------------
+driver          bcm2835-codec
+model           bcm2835-codec
+serial          0000
+bus info        platform:bcm2835-codec
+hw revision     0x1
+driver version  5.10.63
+
+Device topology
+- entity 1: bcm2835-codec-decode-source (1 pad, 1 link)
+            type Node subtype V4L flags 0
+            device node name /dev/video10
+	pad0: Source
+		-> "bcm2835-codec-decode-proc":0 [ENABLED,IMMUTABLE]
+
+- entity 3: bcm2835-codec-decode-proc (2 pads, 2 links)
+            type Node subtype Unknown flags 0
+	pad0: Sink
+		<- "bcm2835-codec-decode-source":0 [ENABLED,IMMUTABLE]
+	pad1: Source
+		-> "bcm2835-codec-decode-sink":0 [ENABLED,IMMUTABLE]
+
+- entity 6: bcm2835-codec-decode-sink (1 pad, 1 link)
+            type Node subtype V4L flags 0
+            device node name /dev/video10
+	pad0: Sink
+		<- "bcm2835-codec-decode-proc":1 [ENABLED,IMMUTABLE]
+
+- entity 15: bcm2835-codec-encode-source (1 pad, 1 link)
+             type Node subtype V4L flags 0
+             device node name /dev/video11
+	pad0: Source
+		-> "bcm2835-codec-encode-proc":0 [ENABLED,IMMUTABLE]
+
+- entity 17: bcm2835-codec-encode-proc (2 pads, 2 links)
+             type Node subtype Unknown flags 0
+	pad0: Sink
+		<- "bcm2835-codec-encode-source":0 [ENABLED,IMMUTABLE]
+	pad1: Source
+		-> "bcm2835-codec-encode-sink":0 [ENABLED,IMMUTABLE]
+
+- entity 20: bcm2835-codec-encode-sink (1 pad, 1 link)
+             type Node subtype V4L flags 0
+             device node name /dev/video11
+	pad0: Sink
+		<- "bcm2835-codec-encode-proc":1 [ENABLED,IMMUTABLE]
+
+- entity 29: bcm2835-codec-isp-source (1 pad, 1 link)
+             type Node subtype V4L flags 0
+             device node name /dev/video12
+	pad0: Source
+		-> "bcm2835-codec-isp-proc":0 [ENABLED,IMMUTABLE]
+
+- entity 31: bcm2835-codec-isp-proc (2 pads, 2 links)
+             type Node subtype Unknown flags 0
+	pad0: Sink
+		<- "bcm2835-codec-isp-source":0 [ENABLED,IMMUTABLE]
+	pad1: Source
+		-> "bcm2835-codec-isp-sink":0 [ENABLED,IMMUTABLE]
+
+- entity 34: bcm2835-codec-isp-sink (1 pad, 1 link)
+             type Node subtype V4L flags 0
+             device node name /dev/video12
+	pad0: Sink
+		<- "bcm2835-codec-isp-proc":1 [ENABLED,IMMUTABLE]
+
+- entity 43: bcm2835-codec-image_fx-source (1 pad, 1 link)
+             type Node subtype V4L flags 0
+             device node name /dev/video18
+	pad0: Source
+		-> "bcm2835-codec-image_fx-proc":0 [ENABLED,IMMUTABLE]
+
+- entity 45: bcm2835-codec-image_fx-proc (2 pads, 2 links)
+             type Node subtype Unknown flags 0
+	pad0: Sink
+		<- "bcm2835-codec-image_fx-source":0 [ENABLED,IMMUTABLE]
+	pad1: Source
+		-> "bcm2835-codec-image_fx-sink":0 [ENABLED,IMMUTABLE]
+
+- entity 48: bcm2835-codec-image_fx-sink (1 pad, 1 link)
+             type Node subtype V4L flags 0
+             device node name /dev/video18
+	pad0: Sink
+		<- "bcm2835-codec-image_fx-proc":1 [ENABLED,IMMUTABLE]
+
+
+** media-ctl -d 2 -p **
+Media controller API version 5.10.63
+
+Media device information
+------------------------
+driver          unicam
+model           unicam
+serial          
+bus info        platform:20801000.csi
+hw revision     0x0
+driver version  5.10.63
+
+Device topology
+- entity 1: imx477 10-001a (2 pads, 2 links)
+            type V4L2 subdev subtype Sensor flags 0
+            device node name /dev/v4l-subdev0
+	pad0: Source
+		[fmt:SBGGR12_1X12/2028x1520 field:none colorspace:srgb xfer:srgb ycbcr:601 quantization:full-range
+		 crop.bounds:(8,16)/4056x3040
+		 crop:(8,16)/4056x3040]
+		-> "unicam-image":0 [ENABLED,IMMUTABLE]
+	pad1: Source
+		[fmt:unknown/16384x1 field:none
+		 crop.bounds:(8,16)/4056x3040
+		 crop:(8,16)/4056x3040]
+		-> "unicam-embedded":0 [ENABLED,IMMUTABLE]
+
+- entity 4: unicam-image (1 pad, 1 link)
+            type Node subtype V4L flags 1
+            device node name /dev/video0
+	pad0: Sink
+		<- "imx477 10-001a":0 [ENABLED,IMMUTABLE]
+
+- entity 10: unicam-embedded (1 pad, 1 link)
+             type Node subtype V4L flags 0
+             device node name /dev/video1
+	pad0: Sink
+		<- "imx477 10-001a":1 [ENABLED,IMMUTABLE]
+
+
+** media-ctl -d 3 -p **
+Failed to enumerate /dev/media3 (-2)
+
+** media-ctl -d 4 -p **
+Failed to enumerate /dev/media4 (-2)
+
+--------------------------------------------------------------------------------
+Cameras
+--------------------------------------------------------------------------------
+** libcamera-hello --list-cameras **
+ERROR: *** unrecognised option '--list-cameras' ***
+
+--------------------------------------------------------------------------------
+Versions
+--------------------------------------------------------------------------------
+** uname -a **
+Linux raspberrypi 5.10.63+ #1488 Thu Nov 18 16:14:04 GMT 2021 armv6l GNU/Linux
+
+** cat /etc/os-release **
+PRETTY_NAME="Raspbian GNU/Linux 11 (bullseye)"
+NAME="Raspbian GNU/Linux"
+VERSION_ID="11"
+VERSION="11 (bullseye)"
+VERSION_CODENAME=bullseye
+ID=raspbian
+ID_LIKE=debian
+HOME_URL="http://www.raspbian.org/"
+SUPPORT_URL="http://www.raspbian.org/RaspbianForums"
+BUG_REPORT_URL="http://www.raspbian.org/RaspbianBugs"
+
+** vcgencmd version **
+Nov 18 2021 16:18:09 
+Copyright (c) 2012 Broadcom
+version d9b293558b4cef6aabedcc53c178e7604de90788 (clean) (release) (start)
+
+** libcamera-hello --version **
+libcamera-apps build: 2a38ae93f143 21-10-2021 (14:49:21)
+libcamera build: v0.0.0+3156-f4070274
+
+--------------------------------------------------------------------------------
+libcamera-hello -t 5000
+--------------------------------------------------------------------------------
+libEGL warning: DRI2: failed to authenticate
+[0:45:09.340760916] [1528]  INFO Camera camera_manager.cpp:293 libcamera v0.0.0+3156-f4070274
+[0:45:09.705879398] [1538]  WARN CameraSensorProperties camera_sensor_properties.cpp:141 No static properties available for 'imx477'
+[0:45:09.706117396] [1538]  WARN CameraSensorProperties camera_sensor_properties.cpp:143 Please consider updating the camera sensor properties database
+[0:45:10.228272365] [1528]  INFO Camera camera.cpp:937 configuring streams: (0) 2028x1520-YUV420
+[0:45:10.228893359] [1538]  INFO RPI raspberrypi.cpp:122 Mode: 1332x990 fmt RG10 Score: 3956.22 (best 3956.22)
+[0:45:10.229245355] [1538]  INFO RPI raspberrypi.cpp:122 Mode: 4056x3040 fmt RG12 Score: 1387 (best 1387)
+[0:45:10.229504353] [1538]  INFO RPI raspberrypi.cpp:122 Mode: 2028x1520 fmt RG12 Score: 500 (best 500)
+[0:45:10.229746350] [1538]  INFO RPI raspberrypi.cpp:122 Mode: 2028x1080 fmt RG12 Score: 1583.84 (best 500)
+[0:45:10.229997348] [1538]  INFO RPI raspberrypi.cpp:122 Mode: 1332x990 fmt pRAA Score: 3456.22 (best 500)
+[0:45:10.230385344] [1538]  INFO RPI raspberrypi.cpp:122 Mode: 4056x3040 fmt pRCC Score: 887 (best 500)
+[0:45:10.230636342] [1538]  INFO RPI raspberrypi.cpp:122 Mode: 2028x1520 fmt pRCC Score: 0 (best 0)
+[0:45:10.230877340] [1538]  INFO RPI raspberrypi.cpp:122 Mode: 2028x1080 fmt pRCC Score: 1083.84 (best 0)
+[0:45:10.231515333] [1538]  INFO RPI raspberrypi.cpp:620 Sensor: /base/soc/i2c0mux/i2c@1/imx477@1a - Selected mode: 2028x1520-pRCC
+[0:45:10.911360762] [1543]  INFO IPARPI raspberrypi.cpp:626 Request ctrl: Saturation = 1.000000
+[0:45:10.921215667] [1543]  INFO IPARPI raspberrypi.cpp:626 Request ctrl: Contrast = 1.000000
+[0:45:10.925249628] [1543]  INFO IPARPI raspberrypi.cpp:626 Request ctrl: Brightness = 0.000000
+[0:45:10.925742623] [1543]  INFO IPARPI raspberrypi.cpp:626 Request ctrl: AwbMode = 0
+[0:45:10.925939621] [1543]  INFO IPARPI raspberrypi.cpp:626 Request ctrl: Sharpness = 1.000000
+[0:45:10.926147619] [1543]  INFO IPARPI raspberrypi.cpp:626 Request ctrl: ExposureValue = 0.000000
+[0:45:10.926349617] [1543]  INFO IPARPI raspberrypi.cpp:626 Request ctrl: AeExposureMode = 0
+[0:45:10.926525615] [1543]  INFO IPARPI raspberrypi.cpp:626 Request ctrl: FrameDurationLimits = [ 33333, 33333 ]
+[0:45:10.926726613] [1543]  INFO IPARPI raspberrypi.cpp:626 Request ctrl: AeMeteringMode = 0
+[0:45:10.926898612] [1543]  INFO IPARPI raspberrypi.cpp:626 Request ctrl: NoiseReductionMode = 3
+[0:45:10.962342269] [1538]  INFO RPISTREAM rpi_stream.cpp:122 No buffers available for ISP Output0
+[0:45:10.962565267] [1538]  INFO RPISTREAM rpi_stream.cpp:122 No buffers available for ISP Output0
+[0:45:10.966447229] [1538]  INFO RPISTREAM rpi_stream.cpp:122 No buffers available for ISP Output0
+[0:45:11.635983745] [1538]  INFO RPI raspberrypi.cpp:1636 Dropping frame at the request of the IPA (6 left)
+[0:45:11.680919310] [1538]  INFO RPI raspberrypi.cpp:1636 Dropping frame at the request of the IPA (5 left)
+[0:45:11.736686769] [1538]  INFO RPI raspberrypi.cpp:1636 Dropping frame at the request of the IPA (4 left)
+[0:45:11.780876340] [1538]  INFO RPI raspberrypi.cpp:1636 Dropping frame at the request of the IPA (3 left)
+[0:45:11.828491879] [1538]  INFO RPI raspberrypi.cpp:1636 Dropping frame at the request of the IPA (2 left)
+[0:45:11.870925467] [1538]  INFO RPI raspberrypi.cpp:1636 Dropping frame at the request of the IPA (1 left)
+[0:45:11.910884080] [1538]  INFO RPI raspberrypi.cpp:1636 Dropping frame at the request of the IPA (0 left)
+[0:45:12.033045895] [1538]  WARN RPI raspberrypi.cpp:1771 Dropping unmatched input frame in stream Unicam Embedded
+[0:45:12.100897237] [1538]  WARN RPI raspberrypi.cpp:1808 Dropping unmatched input frame in stream Unicam Image
+[0:45:12.173317535] [1538]  WARN RPI raspberrypi.cpp:1771 Dropping unmatched input frame in stream Unicam Embedded
+[0:45:12.173837530] [1538]  WARN RPI raspberrypi.cpp:1808 Dropping unmatched input frame in stream Unicam Image
+[0:45:12.174190527] [1538]  WARN RPI raspberrypi.cpp:1771 Dropping unmatched input frame in stream Unicam Embedded
+[0:45:12.264385651] [1538]  WARN RPI raspberrypi.cpp:1808 Dropping unmatched input frame in stream Unicam Image
+[0:45:12.385020478] [1538]  WARN RPI raspberrypi.cpp:1771 Dropping unmatched input frame in stream Unicam Embedded
+[0:45:12.462605723] [1538]  WARN RPI raspberrypi.cpp:1808 Dropping unmatched input frame in stream Unicam Image
+[0:45:12.463011719] [1538]  WARN RPI raspberrypi.cpp:1771 Dropping unmatched input frame in stream Unicam Embedded
+[0:45:12.463355716] [1538]  WARN RPI raspberrypi.cpp:1808 Dropping unmatched input frame in stream Unicam Image
+[0:45:12.570882670] [1538]  WARN RPI raspberrypi.cpp:1771 Dropping unmatched input frame in stream Unicam Embedded
+[0:45:12.571273666] [1538]  WARN RPI raspberrypi.cpp:1771 Dropping unmatched input frame in stream Unicam Embedded
+[0:45:12.716202256] [1538]  WARN RPI raspberrypi.cpp:1808 Dropping unmatched input frame in stream Unicam Image
+[0:45:12.753859890] [1538]  WARN RPI raspberrypi.cpp:1771 Dropping unmatched input frame in stream Unicam Embedded
+[0:45:12.754247886] [1538]  WARN RPI raspberrypi.cpp:1771 Dropping unmatched input frame in stream Unicam Embedded
+[0:45:12.754635883] [1538]  WARN RPI raspberrypi.cpp:1808 Dropping unmatched input frame in stream Unicam Image
+[0:45:13.317303407] [1538]  WARN RPI raspberrypi.cpp:1771 Dropping unmatched input frame in stream Unicam Embedded
+[0:45:13.317845402] [1538]  WARN RPI raspberrypi.cpp:1808 Dropping unmatched input frame in stream Unicam Image
+[0:45:13.374062854] [1538]  WARN RPI raspberrypi.cpp:1771 Dropping unmatched input frame in stream Unicam Embedded
+[0:45:13.374538849] [1538]  WARN RPI raspberrypi.cpp:1808 Dropping unmatched input frame in stream Unicam Image
+[0:45:13.401826583] [1538]  WARN RPI raspberrypi.cpp:1771 Dropping unmatched input frame in stream Unicam Embedded
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  failed to import fd 20
+
