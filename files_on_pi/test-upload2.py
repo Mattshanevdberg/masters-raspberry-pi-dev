@@ -1,7 +1,7 @@
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 
-gauth = GoogleAuth()
+gauth = GoogleAuth('/home/matthew/Desktop/Master_Dev/raspberry-pi/settings.yaml')
 drive = GoogleDrive(gauth)
 
 

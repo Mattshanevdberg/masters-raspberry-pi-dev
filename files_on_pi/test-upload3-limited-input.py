@@ -2,6 +2,11 @@
 ############## IMPORTS ##############
 ### Drive
 import requests
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+from googleapiclient.http import MediaFileUpload
+
 #from oauthlib.oauth2 import BackendApplicationClient
 from requests.auth import HTTPBasicAuth
 import os
@@ -31,6 +36,9 @@ destination_folder_id = 'folder_id'
 TELE_TOKEN = 'token'
 TELE_SEND_ADDRESS = 'send_address'
 device_name =  'matt_test_computer: '
+
+### CAMERA ### 
+
 
 ######### FUNCTIONS #####################
 
@@ -101,6 +109,7 @@ def request_access_token(device_code):
     '''
     if response.status_code == 200:
         tokens = response.json()
+        print(tokens)
         print('Access token:', tokens['access_token'])
         print('Refresh token:', tokens['refresh_token'])
         return tokens['access_token'], tokens['refresh_token']
@@ -191,6 +200,8 @@ def drive_create_folder(access_token, folder_name, parent_folder_id):
         response = requests.post(url, headers=headers, json=data)
         if response.status_code == 200:
             print(f"Folder '{folder_name}' created successfully.")
+            print(response.headers)
+            print(response._content)
             return True
         else:
             print(f"Error creating folder '{folder_name}': {response.status_code}, {response.text}")
@@ -350,8 +361,56 @@ def check_elapsed_time(start_time):
     elapsed_time = time.time() - start_time
     return elapsed_time
 
+### CAMERA ###
+
+def set_camera_mode(current_camera_mode):
+    '''sets the mode that you want the camera to operate in (video or camera)
+        Params: current_camera_mode 
+        Reurns: current_camera_mode'''
+    #check if there is a message saying change mode
+    print('checking message for change_mode_camera or change_mode_video')
+    #if there is no change in mode then keep mode at the current mode. If current mode is None (on restart), then set mode to default (video)
+    return current_camera_mode
+
+def capture_images(image_interval):
+    '''Captures an image every interval seconds and uploads them to the drive
+        Params: image_interval
+        Returns: True if successful, False if not successful'''
+    print(f"capturing images every {image_interval}...")
+
+def capture_video(video_length):
+    '''captures a video of length video_length and uploads video to drive
+        Params: video_length
+        Returns: True if successful, False if not Successful'''
+    print(f'taking video of length {video_length}')
+
+#### TEST ####
+def test_credentials():
+    '''testing the'''
+    creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    try:
+        # create drive api client
+        service = build('drive', 'v3', credentials=creds)
+
+        file_metadata = {'name': 'download.jpg'}
+        media = MediaFileUpload('download.jpg',
+                                mimetype='image/jpeg')
+        # pylint: disable=maybe-no-member
+        file = service.files().create(body=file_metadata, media_body=media,
+                                      fields='id').execute()
+        print(F'File ID: {file.get("id")}')
+
+    except HttpError as error:
+        print(F'An error occurred: {error}')
+        file = None
+
+    return file.get('id')
+    
+    print(creds)
+
 
 if __name__ == '__main__':
+
 
     # initialise the telegram bot
     tele_bot = initialise_tele_bot()
@@ -361,7 +420,7 @@ if __name__ == '__main__':
 
     # try retreive the refresh token (refresh token is set to None if it is not there)
     refresh_token = retrieve_refresh_token()
-
+    #test_credentials()
     # if there is no refresh token present then this is a first time start up or refresh token is missing 
     # and we need to authorise device to access the drive and get a new refresh_token and save it else we use
     # the refresh token to get an updated access token
@@ -371,7 +430,7 @@ if __name__ == '__main__':
         access_token, refresh_token = get_new_refresh_token()
     else:
         access_token = refresh_access_token(refresh_token)
-    
+        test_credentials() 
     successful_upload = upload_to_drive(access_token, source_folder_path, desired_folder_name, destination_folder_id)
     
     
