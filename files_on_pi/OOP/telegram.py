@@ -1,8 +1,9 @@
 import telepot
 
 ### TELEGRAM ###
-TELE_TOKEN = 'token'
-TELE_SEND_ADDRESS = 'send_address'
+TELE_TOKEN = '6670579130:AAHkXkTqTLd_vm-H5aASyMByv06p2K8Y5GM'
+TELE_SEND_ADDRESS = '6392570521'
+device_name =  'matt_test_computer: '
 
 class TelegramBot:
     def __init__(self, device_name):
@@ -24,7 +25,10 @@ class TelegramBot:
         self.bot.sendMessage(TELE_SEND_ADDRESS, self.device_name + message)
         print('message sent to ' + self.device_name + message)
         #return None
-    
+
+#test code
+'''    
 bot = TelegramBot("MATT")
 bot.send_telegram("message test")
 bot.receive_message()
+'''

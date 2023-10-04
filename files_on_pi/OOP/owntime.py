@@ -11,8 +11,13 @@ class Timer:
         return self.start_time
 
     def check_elapsed_time(self):
+        '''checks the elapsed time since the start timer function was called
+            returns: elapsed time'''
         self.elapsed_time = time.time() - self.start_time
         return self.elapsed_time    
 
     def sleep(self, interval):
         time.sleep(interval)
+    
+    def get_date_time(self):
+        return time.strftime('%Y-%m-%d_%H-%M')
