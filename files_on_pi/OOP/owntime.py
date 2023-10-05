@@ -8,7 +8,6 @@ class Timer:
     def start_timer(self):
         self.start_time = time.time()
         print(time.time())
-        return self.start_time
 
     def check_elapsed_time(self):
         '''checks the elapsed time since the start timer function was called
