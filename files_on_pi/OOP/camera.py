@@ -1,4 +1,4 @@
-#import picamera2
+import picamera2
 import os
 #own functions
 from owntime import Timer
