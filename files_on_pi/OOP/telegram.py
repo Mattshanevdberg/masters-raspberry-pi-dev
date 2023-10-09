@@ -3,8 +3,8 @@ import sys
 import time
 
 ### TELEGRAM ###
-TELE_TOKEN = '6670579130:AAHkXkTqTLd_vm-H5aASyMByv06p2K8Y5GM'
-TELE_SEND_ADDRESS = '6392570521'
+TELE_TOKEN = 'token'
+TELE_SEND_ADDRESS = 'send_address'
 
 class TelegramBot:
     def __init__(self, device_name):

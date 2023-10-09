@@ -20,10 +20,10 @@ DEVICE_AUTH_URL = 'https://oauth2.googleapis.com/device/code'
 REFRESH_URL = 'https://oauth2.googleapis.com/token'
 SCOPES = ['https://www.googleapis.com/auth/drive.file']
 # OAuth 2.0 client credentials
-CLIENT_ID = '623664903149-plpsg8029i2fkm5flg1gpjctc1qngb3c.apps.googleusercontent.com'
-CLIENT_SECRET = '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'
+CLIENT_ID = 'client_id'
+CLIENT_SECRET = 'client_secret'
 # Sample folder to upload from the desktop
-DESTINATION_FOLDER_ID = '1-gNis20hcz9aTIxQOCAFFbqx83hfpGJt'
+DESTINATION_FOLDER_ID = 'folder_id'
 
 
 class DriveAuth:
@@ -191,6 +191,7 @@ class DriveAuth:
     def get_new_refresh_token(self):
         '''the full overview function that retrieves a new refresh token and saves it to a file
             and to a variable'''
+        #TESTED 09-10-2023
         try: 
             while (not self.refresh_token):
                 # loop to keep getting verification code each time it expires
@@ -217,8 +218,12 @@ class DriveAuth:
     def refresh_access_token(self):
         ''' Request a new access token using the refresh token 
             '''
-        self.refresh_token = '1//03jGndH_BX9YOCgYIARAAGAMSNwF-L9Ir9EnGPpSA3kAawB-YsddKbudncO_wfRtM2jPGOj_vq20dv3MHYXYwHZYIsb5HZt-0Sos'
+        #TESTED 09-10-2023
+
+        #self.refresh_token = '1//03jGndH_BX9YOCgYIARAAGAMSNwF-L9Ir9EnGPpSA3kAawB-YsddKbudncO_wfRtM2jPGOj_vq20dv3MHYXYwHZYIsb5HZt-0Sos'
+        #start timer to determine when the access token will expire
         self.access_token_timer.start_timer
+        #request the access token using the refresh token 
         response = requests.post(REFRESH_URL, auth=HTTPBasicAuth(CLIENT_ID, CLIENT_SECRET), data={
             'grant_type': 'refresh_token',
             'refresh_token': self.refresh_token
@@ -226,15 +231,15 @@ class DriveAuth:
 
         if response.status_code == 200:
             tokens = response.json()
-            print('Access token:', tokens['access_token'])
+            #print('Access token:', tokens['access_token'])
             self.access_token = tokens['access_token']
             self.access_token_expires_in = tokens['expires_in']
             self.save_token_creds()
             #return tokens['access_token']
         else:
-            print('Access token refresh failed.')
-            # Get new refresh token if access token fails
-            #
+            self.telegram_bot.send_telegram('Access token refresh failed. there is likely something wrong with the refresh token. try deleting it and restarting the pi. Otherwise see the error below..')
+            error_code = str(response.status_code)
+            self.telegram_bot.send_telegram('function:DriveAuth.refresh_access_token: Access token refresh failed.' + 'error: ' + error_code + response.text)
             return None   
 
     def check_access_token_expired(self):
@@ -256,17 +261,23 @@ class DriveUpload:
     def collect_folder_paths_to_upload(self):
         '''create a list containing strings of the paths to the folders 
         on the Desktop '''
-        #desktop_path = f'/home/{self.user_name}/Desktop/'
-        #test
-        desktop_path = f'/home/{self.user_name}/Desktop/test_upload'
-        #end test
-        # empty the list of folders attribute
-        self.list_of_folders = []
-        for item in os.listdir(desktop_path):
-            item_path = os.path.join(desktop_path, item)
-            if os.path.isdir(item_path):
-                self.list_of_folders.append(item_path)
-            print(self.list_of_folders)
+        # TESTED 09-10-2023
+        try:
+            desktop_path = f'/home/{self.user_name}/Desktop'
+            #test
+            #desktop_path = f'/home/{self.user_name}/Desktop/test_upload (copy)'
+            #end test
+            # empty the list of folders attribute
+            self.list_of_folders = []
+            # fill the  list with the paths to all folders on the desktop (only folders)
+            for item in os.listdir(desktop_path):
+                item_path = os.path.join(desktop_path, item)
+                if os.path.isdir(item_path):
+                    self.list_of_folders.append(item_path)
+                print(self.list_of_folders)
+        except Exception as e: 
+            function_name = 'DriveAuth.collect_folder_paths_to_upload'
+            self.telegram_bot.send_telegram(function_name + e)
     
     def delete_folders(self):
         '''deletes all the folders in the self.list_of_folders attribute'''
@@ -276,15 +287,20 @@ class DriveUpload:
                 print(f'Deleted folder: {folder_path}')
             except Exception as e:
                 print(f'Failed to delete folder {folder_path}: {str(e)}')
+                function_name = 'DriveAuth.delete_folders'
+                self.telegram_bot.send_telegram(function_name + e)
 
     def drive_create_folder(self, desired_folder_name):
         ''' Create a folder and stores the id of this folder'''
         # refresh the access token 
-        self.drive_auth.refresh_access_token()
-
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-
+        #TESTED 09-10-2023
         try:
+            #refresh the access token before uploading
+            self.drive_auth.refresh_access_token()
+
+            creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+
+
             # create drive api client
             service = build('drive', 'v3', credentials=creds)
             file_metadata = {
@@ -302,13 +318,19 @@ class DriveUpload:
             #return file.get('id')
 
         except HttpError as error:
-            print(F'An error occurred: {error}')
-            #return None
+            function_name = 'DriveAuth.drive_create_folder'
+            self.telegram_bot.send_telegram(function_name + error)
+                
+        except Exception as e:  
+            function_name = 'DriveAuth.drive_create_folder'
+            self.telegram_bot.send_telegram(function_name + e)       
     
     def drive_upload_image(self, file_name, file_path):
         '''uploads an image to the drive'''
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+        #TESTED 09-10-2023
+
         try:
+            creds = Credentials.from_authorized_user_file('token.json', SCOPES)
             # create drive api client
             service = build('drive', 'v3', credentials=creds)
 
@@ -321,16 +343,17 @@ class DriveUpload:
             # pylint: disable=maybe-no-member
             file = service.files().create(body=file_metadata, media_body=media,
                                         fields='id').execute()
-            print(F'File ID: {file.get("id")}')
+            #print(F'File ID: {file.get("id")}')
 
-        except HttpError as error:
-            print(F'An error occurred: {error}')
-            file = None
+        except Exception as e:  
+            function_name = 'DriveAuth.drive_upload_image'
+            self.telegram_bot.send_telegram(function_name + e) 
 
     def drive_upload_video(self, file_name, file_path):
         '''uploads a video to the drive'''
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+        #TESTED 09-10-2023
         try:
+            creds = Credentials.from_authorized_user_file('token.json', SCOPES)
             # create drive api client
             service = build('drive', 'v3', credentials=creds)
 
@@ -343,46 +366,55 @@ class DriveUpload:
             # pylint: disable=maybe-no-member
             file = service.files().create(body=file_metadata, media_body=media,
                                         fields='id').execute()
-            print(F'File ID: {file.get("id")}')
+            #print(F'File ID: {file.get("id")}')
 
-        except HttpError as error:
-            print(F'An error occurred: {error}')
-            file = None
+        except Exception as e:  
+            function_name = 'DriveAuth.drive_upload_video'
+            self.telegram_bot.send_telegram(function_name + e)
         
     def upload_folders_to_drive(self):
         '''uploads all folders on the desktop to the drive and deletes
         the folders from the desktop'''
-        #get list of folders to upload
-        self.collect_folder_paths_to_upload()
+        # TESTED 09-10-2023
+        
+        try:
+            #get list of folders to upload
+            self.collect_folder_paths_to_upload()
 
-        for folder in self.list_of_folders:
-            # create a folder on the drive
-            #test
-            folder = '/home/matthew/Desktop/Test_upload_video'
-            #end test
-            print(folder)
-            self.drive_create_folder(os.path.basename(folder))
+            for folder in self.list_of_folders:
+                # create a folder on the drive
+                #test
+                #folder = '/home/matthew/Desktop/Test_upload_video'
+                #end test
+                #print(folder)
+                self.drive_create_folder(os.path.basename(folder))
 
-            # List files in the local folder
-            files_to_upload = os.listdir(folder)
+                # List files in the local folder
+                files_to_upload = os.listdir(folder)
 
-            if 'image' in folder:
-                for file_name in files_to_upload:
-                    file_path = os.path.join(folder, file_name)
+                if 'image' in folder:
+                    for file_name in files_to_upload:
+                        file_path = os.path.join(folder, file_name)
+                    
+                        # Upload each file to the created subfolder on Google Drive
+                        self.drive_upload_image(file_name, file_path)
+
+                        #print(f"Uploaded {file_name} to Google Drive")
                 
-                    # Upload each file to the created subfolder on Google Drive
-                    self.drive_upload_image(file_name, file_path)
+                if 'video' in folder:
+                    for file_name in files_to_upload:
+                        file_path = os.path.join(folder, file_name)
+                    
+                        # Upload each file to the created subfolder on Google Drive
+                        self.drive_upload_video(file_name, file_path)
 
-                    print(f"Uploaded {file_name} to Google Drive")
-            
-            if 'video' in folder:
-                for file_name in files_to_upload:
-                    file_path = os.path.join(folder, file_name)
-                
-                    # Upload each file to the created subfolder on Google Drive
-                    self.drive_upload_video(file_name, file_path)
+                        #print(f"Uploaded {file_name} to Google Drive")
+            # send a message to inform the upload is finished
+            self.telegram_bot.send_telegram('upload complete...')
 
-                    print(f"Uploaded {file_name} to Google Drive")
+        except Exception as e:  
+            function_name = 'DriveAuth.upload_folders_to_drive'
+            self.telegram_bot.send_telegram(function_name + e)
 
 
 

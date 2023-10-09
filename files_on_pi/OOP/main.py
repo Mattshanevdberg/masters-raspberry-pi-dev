@@ -3,7 +3,7 @@ import os
 ### OWN FUNCTION IMPORT ###
 from drive import DriveAuth
 from drive import DriveUpload
-#from camera import Camera
+from camera import Camera
 from owntime import Timer
 from telegram import TelegramBot
 
@@ -22,6 +22,7 @@ def main():
         access_token_timer = Timer()
         drive_auth1 = DriveAuth(USER_NAME, access_token_timer)
         drive_upload1 = DriveUpload(USER_NAME, drive_auth1, access_token_timer)
+        pi_camera = Camera(USER_NAME)
         #picamera1 = Camera(USER_NAME)
         tele_bot1 = TelegramBot(USER_NAME)
         mode = 'video' # default mode on start up
@@ -101,12 +102,14 @@ def main():
             # if mode is video and not sleep or upload = True 
             if mode == 'video' and not sleep_mode and not upload_mode:
                 # take videos
-                print('take video')
+                pi_camera.capture_video()
+                #print('take video')
 
             # if mode is image and not sleep or upload = True 
             if mode == 'image' and not sleep_mode and not upload_mode:
-                # take videos
-                print('take image')
+                # take pictures
+                pi_camera.capture_images()
+                #print('take image')
                 # take images
             
 
@@ -130,6 +133,7 @@ def main():
             
             # if mode is upload
             if mode == 'upload' or upload_mode:
+            #TESTED
                 # send message that uploading files
                 tele_bot1.send_telegram('uploading files...')
                 # call upload folders function
