@@ -220,7 +220,7 @@ class DriveAuth:
             '''
         #TESTED 09-10-2023
 
-        #self.refresh_token = '1//03jGndH_BX9YOCgYIARAAGAMSNwF-L9Ir9EnGPpSA3kAawB-YsddKbudncO_wfRtM2jPGOj_vq20dv3MHYXYwHZYIsb5HZt-0Sos'
+        
         #start timer to determine when the access token will expire
         self.access_token_timer.start_timer
         #request the access token using the refresh token 
