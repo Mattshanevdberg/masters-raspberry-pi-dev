@@ -1,5 +1,6 @@
 ### OTHER FUNCTION IMPORT ###
 import os
+import traceback
 ### OWN FUNCTION IMPORT ###
 from drive import DriveAuth
 from drive import DriveUpload
@@ -151,7 +152,8 @@ def main():
         print(f"An error occurred in main: {str(e)}")
         tele_bot1.send_telegram(f"An error occurred in main: {str(e)}")
         #force restart of pi
-        os.system('sudo reboot')
+        #os.system('sudo reboot')
+        traceback.print_exc()
 
 if __name__ == "__main__":
     # Call the main function when the script is run

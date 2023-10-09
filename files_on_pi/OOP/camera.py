@@ -22,8 +22,14 @@ class Camera:
         '''Create folder at the path with folder name
             Param: path including folder name'''
         # Create the output folder on the desktop if it doesn't exist
-        if not os.path.exists(path):
-            os.makedirs(path)
+        try:
+            if not os.path.exists(path):
+                os.makedirs(path)
+            
+        except Exception as e:  
+            function_name = 'DriveAuth.create_folder'
+            self.tele_bot_cam.send_telegram(function_name + e) 
+
    
     def capture_images(self):
         '''captures images at a set interval for a set amount of time
@@ -171,6 +177,8 @@ class Camera:
         #self.camera.start_and_record_video(video_path, quality=Quality.VERY_HIGH, duration=VID_SEC_LENGTH_OF_VIDEO)
         print(video_path)
 '''
-#camera = Camera('matthew')
-#camera.capture_images_test()
+
+camera = Camera('ljeantet')
+camera.output_folder = 'test'
+camera.capture_images_test()
 #camera.capture_video_test()
