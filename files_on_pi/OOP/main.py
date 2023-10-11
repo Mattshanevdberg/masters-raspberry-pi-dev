@@ -130,7 +130,7 @@ def main():
             if mode == 'reboot':
             #TESTED 
                 print('reboot')
-                #os.system('sudo reboot')
+                os.system('sudo reboot')
             
             # if mode is upload
             if mode == 'upload' or upload_mode:
@@ -149,11 +149,12 @@ def main():
 
     except Exception as e:
         # Handle exceptions or errors gracefully
-        print(f"An error occurred in main: {str(e)}")
-        tele_bot1.send_telegram(f"An error occurred in main: {str(e)}")
+        e = str(e)
+        print(f"An error occurred in main: {e}")
+        tele_bot1.send_telegram(f"An error occurred in main: {e}")
         #force restart of pi
-        #os.system('sudo reboot')
         traceback.print_exc()
+        os.system('sudo reboot')
 
 if __name__ == "__main__":
     # Call the main function when the script is run
