@@ -1,5 +1,8 @@
+
 import picamera2
 import os
+from picamera2.encoders import H264Encoder, Quality
+from picamera2.outputs import FfmpegOutput
 #own functions
 from owntime import Timer
 from telegram import TelegramBot
@@ -12,6 +15,7 @@ VID_SEC_LENGTH_OF_VIDEO = 60
 class Camera:
     def __init__(self, user_name): #source_folder_path):    REMOVED
         self.user_name = user_name
+        self.not_configured = True
 #        self.source_folder_path = source_folder_path       REMOVED
         self.output_folder = None
         self.timer = Timer()
@@ -46,8 +50,10 @@ class Camera:
             self.timer.start_timer()
 
             #configure camera and take pictures for upload time
-            config = self.camera.create_still_configuration()
-            self.camera.configure(config)
+            if self.not_configured:
+                config = self.camera.create_still_configuration()
+                self.camera.configure(config)
+                #self.not_configured = False
             not_expired = True
             self.camera.start()
             image_counter = 1
@@ -72,11 +78,13 @@ class Camera:
                 
                 # iterate counter
                 image_counter += 1
-
-            self.camera.close()
+                print(image_counter)
+            #self.camera.close()
+            self.camera.stop()
 
         except Exception as e:  
             function_name = 'DriveAuth.capture_images'
+            e = str(e)
             self.tele_bot_cam.send_telegram(function_name + e) 
 
     def capture_video(self):
@@ -96,10 +104,19 @@ class Camera:
             current_time = self.timer.get_date_time()
 
             #take video of set length of time
-            self.camera.start_and_record_video(f'{self.user_name}_video_{current_time}.mp4', quality=Quality.VERY_HIGH, duration=VID_SEC_LENGTH_OF_VIDEO)
+            #self.camera.start_and_record_video(f'{self.user_name}_video_{current_time}.mp4', quality='Quality.VERY_HIGH', duration=VID_SEC_LENGTH_OF_VIDEO)
+            vid_path = os.path.join(desktop_path, (f'{self.user_name}_video_{current_time}.mp4'))
+            video_config = self.camera.create_video_configuration()
+            self.camera.configure
+            encoder = H264Encoder()
+            output = FfmpegOutput(vid_path)
+            self.camera.start_recording(encoder, output, Quality.VERY_HIGH)
+            self.timer.sleep(VID_SEC_LENGTH_OF_VIDEO)
+            self.camera.stop_recording()
 
         except Exception as e:  
             function_name = 'DriveAuth.capture_video'
+            e = str(e)
             self.tele_bot_cam.send_telegram(function_name + e) 
             
 #####TEST
@@ -178,7 +195,7 @@ class Camera:
         print(video_path)
 '''
 
-camera = Camera('ljeantet')
-camera.output_folder = 'test'
-camera.capture_images_test()
-#camera.capture_video_test()
+#camera = Camera('ljeantet')
+#camera.output_folder = 'test'
+#camera.capture_images()
+#camera.capture_video()
