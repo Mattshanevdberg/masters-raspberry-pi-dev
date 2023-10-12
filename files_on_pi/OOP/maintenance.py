@@ -4,7 +4,7 @@ from telegram import TelegramBot
 from owntime import Timer
 
 ### GLOBALS ###
-
+#dont actually need the IP address..
 class Maintenance:
     def __init__(self, device_name):
 
