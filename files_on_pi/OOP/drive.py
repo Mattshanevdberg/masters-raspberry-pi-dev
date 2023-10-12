@@ -278,10 +278,12 @@ class DriveUpload:
             self.list_of_folders = []
             # fill the  list with the paths to all folders on the desktop (only folders)
             for item in os.listdir(desktop_path):
-                item_path = os.path.join(desktop_path, item)
-                if os.path.isdir(item_path):
-                    self.list_of_folders.append(item_path)
-                print(self.list_of_folders)
+                if item  not in ('pycache', 'masters-raspberry-pi-dev'):
+                    item_path = os.path.join(desktop_path, item)
+                    if os.path.isdir(item_path):
+                        self.list_of_folders.append(item_path)
+                #print(self.list_of_folders)
+                
         except Exception as e: 
             e = str(e)
             function_name = 'DriveAuth.collect_folder_paths_to_upload'
@@ -422,8 +424,10 @@ class DriveUpload:
 
                         #print(f"Uploaded {file_name} to Google Drive")
             # send a message to inform the upload is finished
-            self.telegram_bot.send_telegram('upload complete...')
-
+            self.telegram_bot.send_telegram('upload complete... deleting folders on desktop..')
+            self.delete_folders()
+            self.telegram_bot.send_telegram('folders have been deleted')
+                                            
         except Exception as e:  
             e = str(e)
             function_name = 'DriveAuth.upload_folders_to_drive'

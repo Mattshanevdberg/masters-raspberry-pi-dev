@@ -87,8 +87,8 @@ def main():
                 #TESTED: 06-10-2023 - except teamviewer
 
                 # get ip address to use in the VNC
-                ip_address = maintenance.get_ip_address()
-                tele_bot1.send_telegram(f'IP address: {ip_address}. This is not actually required for VNC... going into sleep loop now...')
+                #ip_address = maintenance.get_ip_address()
+                #tele_bot1.send_telegram(f'IP address: {ip_address}. This is not actually required for VNC... going into sleep loop now...')
                 # send Telegram reminding that must set mode at end and that
                 # must change sleep and upload period if during that time and testing
                 # is taking place

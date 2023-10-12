@@ -30,6 +30,6 @@ class Maintenance:
             self.telegram_bot.send_telegram(f"{function_name}: {e}")          
             return 'issue with function could not get the ip address'  
 
-maintenance = Maintenance('USER_NAME')
-ip_address = maintenance.get_ip_address()
-print(ip_address)
+#maintenance = Maintenance('USER_NAME')
+#ip_address = maintenance.get_ip_address()
+#print(ip_address)
