@@ -83,7 +83,7 @@ class Camera:
             self.camera.stop()
 
         except Exception as e:  
-            function_name = 'DriveAuth.capture_images'
+            function_name = 'DriveAuth.capture_images:'
             e = str(e)
             self.tele_bot_cam.send_telegram(function_name + e) 
 
@@ -115,7 +115,7 @@ class Camera:
             self.camera.stop_recording()
 
         except Exception as e:  
-            function_name = 'DriveAuth.capture_video'
+            function_name = 'DriveAuth.capture_video:'
             e = str(e)
             self.tele_bot_cam.send_telegram(function_name + e) 
             

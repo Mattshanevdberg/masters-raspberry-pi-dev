@@ -60,6 +60,7 @@ class TelegramBot:
                 #return 'No new messages in the last 24 hours'
         except Exception as e:
             # print error to file
+            e = str(e)
             function_name = 'receive_telegram'
             self.print_error_to_file(e, function_name)
             return False
@@ -73,6 +74,7 @@ class TelegramBot:
             return True
         except Exception as e:
             # print error to file
+            e = str(e)
             function_name = 'send_telegram'
             self.print_error_to_file(e, function_name)
             return False            

@@ -58,6 +58,7 @@ class DriveAuth:
             self.telegram_bot.send_telegram('Refresh token file not found.')
             return False
         except Exception as e:
+            e = str(e)
             function_name = 'DriveAuth.retrieve_refresh_token:'
             self.telegram_bot.send_telegram(f"{function_name}: {e}")
             return False 
@@ -69,6 +70,7 @@ class DriveAuth:
                 file.write(self.refresh_token)
                 self.telegram_bot.send_telegram('Refresh token saved successfully.')
         except Exception as e:
+            e = str(e)
             function_name = 'DriveAuth.save_refresh_token:'
             self.telegram_bot.send_telegram(f"{function_name}: {e}")            
     
@@ -93,7 +95,8 @@ class DriveAuth:
             with open('token.json', 'w') as file:
                 json.dump(self.tokens, file)
                 self.telegram_bot.send_telegram('Token Creds saved successfully.')
-        except Exception as e:            
+        except Exception as e:  
+            e = str(e)          
             function_name = 'DriveAuth.save_token_creds:'
             self.telegram_bot.send_telegram(f"{function_name}: An error occurred while saving the Token Creds: {e}")
     
@@ -122,6 +125,7 @@ class DriveAuth:
                 self.telegram_bot.send_telegram('function: DriveAuth.request_device_authorization: Device authorization request failed.'+ 'error: ' + error_code + response.text)
                 #return None, None, None, None
         except Exception as e:
+            e = str(e)
             function_name = 'DriveAuth.request_device_authorization:'
             self.telegram_bot.send_telegram(function_name + e)        
     
@@ -159,6 +163,7 @@ class DriveAuth:
                 self.telegram_bot.send_telegram('function:DriveAuth.request_access_token: Access token request failed.' + 'error: ' + error_code + response.text)
                 #return None, None
         except Exception as e:
+            e = str(e)
             function_name = 'DriveAuth.request_access_token:'
             self.telegram_bot.send_telegram(function_name + e)           
 
@@ -183,6 +188,7 @@ class DriveAuth:
                     self.request_access_token()
 
         except Exception as e:
+            e = str(e)
             function_name = 'DriveAuth.poll_for_token:'
             self.telegram_bot.send_telegram(function_name + e)    
 
@@ -212,6 +218,7 @@ class DriveAuth:
             self.save_refresh_token()
             #return access_token, refresh_token
         except Exception as e: 
+            e = str(e)
             function_name = 'DriveAuth.get_new_refresh_token'
             self.telegram_bot.send_telegram(function_name + e)
 
@@ -276,6 +283,7 @@ class DriveUpload:
                     self.list_of_folders.append(item_path)
                 print(self.list_of_folders)
         except Exception as e: 
+            e = str(e)
             function_name = 'DriveAuth.collect_folder_paths_to_upload'
             self.telegram_bot.send_telegram(function_name + e)
     
@@ -286,7 +294,8 @@ class DriveUpload:
                 shutil.rmtree(folder_path)
                 print(f'Deleted folder: {folder_path}')
             except Exception as e:
-                print(f'Failed to delete folder {folder_path}: {str(e)}')
+                e = str(e)
+                print(f'Failed to delete folder {folder_path}: {e}')
                 function_name = 'DriveAuth.delete_folders'
                 self.telegram_bot.send_telegram(function_name + e)
 
@@ -322,6 +331,7 @@ class DriveUpload:
             self.telegram_bot.send_telegram(function_name + error)
                 
         except Exception as e:  
+            e = str(e)
             function_name = 'DriveAuth.drive_create_folder'
             self.telegram_bot.send_telegram(function_name + e)       
     
@@ -346,6 +356,7 @@ class DriveUpload:
             #print(F'File ID: {file.get("id")}')
 
         except Exception as e:  
+            e = str(e)
             function_name = 'DriveAuth.drive_upload_image'
             self.telegram_bot.send_telegram(function_name + e) 
 
@@ -368,7 +379,8 @@ class DriveUpload:
                                         fields='id').execute()
             #print(F'File ID: {file.get("id")}')
 
-        except Exception as e:  
+        except Exception as e: 
+            e = str(e) 
             function_name = 'DriveAuth.drive_upload_video'
             self.telegram_bot.send_telegram(function_name + e)
         
@@ -413,6 +425,7 @@ class DriveUpload:
             self.telegram_bot.send_telegram('upload complete...')
 
         except Exception as e:  
+            e = str(e)
             function_name = 'DriveAuth.upload_folders_to_drive'
             self.telegram_bot.send_telegram(function_name + e)
 
