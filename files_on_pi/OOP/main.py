@@ -7,6 +7,7 @@ from drive import DriveUpload
 from camera import Camera
 from owntime import Timer
 from telegram import TelegramBot
+from maintenance import Maintenance
 
 ### GLOBALS ###
 USER_NAME = 'matthew' #ensure this is user computer user name
@@ -24,7 +25,7 @@ def main():
         drive_auth1 = DriveAuth(USER_NAME, access_token_timer)
         drive_upload1 = DriveUpload(USER_NAME, drive_auth1, access_token_timer)
         pi_camera = Camera(USER_NAME)
-        #picamera1 = Camera(USER_NAME)
+        maintenance = Maintenance(USER_NAME)
         tele_bot1 = TelegramBot(USER_NAME)
         mode = 'video' # default mode on start up
         require_refresh_token = False
@@ -85,8 +86,9 @@ def main():
             if mode == 'maintenance':
                 #TESTED: 06-10-2023 - except teamviewer
 
-                # call the TeamViewer
-                print('calling teamviewer')
+                # get ip address to use in the VNC
+                ip_address = maintenance.get_ip_address()
+                tele_bot1.send_telegram(f'IP address: {ip_address}. This is not actually required for VNC... going into sleep loop now...')
                 # send Telegram reminding that must set mode at end and that
                 # must change sleep and upload period if during that time and testing
                 # is taking place
