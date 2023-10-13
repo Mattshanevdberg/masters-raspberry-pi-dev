@@ -107,7 +107,7 @@ class Camera:
             #self.camera.start_and_record_video(f'{self.user_name}_video_{current_time}.mp4', quality='Quality.VERY_HIGH', duration=VID_SEC_LENGTH_OF_VIDEO)
             vid_path = os.path.join(desktop_path, (f'{self.user_name}_video_{current_time}.mp4'))
             video_config = self.camera.create_video_configuration()
-            self.camera.configure
+            self.camera.configure(video_config)
             encoder = H264Encoder()
             output = FfmpegOutput(vid_path)
             self.camera.start_recording(encoder, output, Quality.VERY_HIGH)
