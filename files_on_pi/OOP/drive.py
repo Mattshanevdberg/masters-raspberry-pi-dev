@@ -264,6 +264,8 @@ class DriveUpload:
         self.drive_auth = drive_auth
         self.access_token_timer = access_token_timer
         self.parent_folder_id = None
+        self.telegram_bot = TelegramBot(self.user_name)
+        self.upload_timer = Timer()        
     
     def collect_folder_paths_to_upload(self):
         '''create a list containing strings of the paths to the folders 
@@ -271,6 +273,7 @@ class DriveUpload:
         # TESTED 09-10-2023
         try:
             desktop_path = f'/home/{self.user_name}/Desktop'
+            folder_counter = 0
             #test
             #desktop_path = f'/home/{self.user_name}/Desktop/test_upload (copy)'
             #end test
@@ -278,10 +281,18 @@ class DriveUpload:
             self.list_of_folders = []
             # fill the  list with the paths to all folders on the desktop (only folders)
             for item in os.listdir(desktop_path):
-                item_path = os.path.join(desktop_path, item)
-                if os.path.isdir(item_path):
-                    self.list_of_folders.append(item_path)
-                print(self.list_of_folders)
+                if item  not in ('__pycache__', 'masters-raspberry-pi-dev'):
+                    item_path = os.path.join(desktop_path, item)
+                    if os.path.isdir(item_path):
+                        self.list_of_folders.append(item_path)
+                        folder_counter += 1
+
+                        if folder_counter == 20:
+                            break
+                
+            #print(self.list_of_folders)
+
+
         except Exception as e: 
             e = str(e)
             function_name = 'DriveAuth.collect_folder_paths_to_upload'
@@ -419,11 +430,17 @@ class DriveUpload:
                     
                         # Upload each file to the created subfolder on Google Drive
                         self.drive_upload_video(file_name, file_path)
+                
+                #pause for 3 seconds before uploading next folder
+                self.upload_timer.sleep(3)
 
                         #print(f"Uploaded {file_name} to Google Drive")
             # send a message to inform the upload is finished
-            self.telegram_bot.send_telegram('upload complete...')
-
+            self.telegram_bot.send_telegram('upload complete... deleting folders on desktop..')
+            self.delete_folders()
+            self.telegram_bot.send_telegram('folders have been deleted')
+            self.upload_timer.sleep(60)
+                                            
         except Exception as e:  
             e = str(e)
             function_name = 'DriveAuth.upload_folders_to_drive'
