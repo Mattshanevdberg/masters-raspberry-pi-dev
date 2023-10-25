@@ -12,7 +12,7 @@ from maintenance import Maintenance
 ### GLOBALS ###
 USER_NAME = 'matthew' #ensure this is user computer user name
 SOURCE_FOLDER_PATH = '/home/' + USER_NAME + '/Desktop/Test_upload_folder'
-SLEEP_PERIOD_START = 2000 # time as an integer, 8pm = 2000, 8:05pm = 2005, 06:35am = 0635, etc.
+SLEEP_PERIOD_START = 2000 # time as an integer, !!!6:30am = 630 THERE IS NO ZERO IN FRONT!!! ,  8pm = 2000, 8:05pm = 2005, etc.
 SLEEP_PERIOD_END = 2005
 UPLOAD_PERIOD_START = 2000
 UPLOAD_PERIOD_END = 2005
@@ -154,6 +154,9 @@ def main():
         e = str(e)
         print(f"An error occurred in main: {e}")
         tele_bot1.send_telegram(f"An error occurred in main: {e}")
+        #check if maintenance mode is activated then just sleep
+        while tele_bot1.receive_message(mode) == 'maintenance':
+            access_token_timer.sleep(60)
         #force restart of pi
         traceback.print_exc()
         os.system('sudo reboot')
