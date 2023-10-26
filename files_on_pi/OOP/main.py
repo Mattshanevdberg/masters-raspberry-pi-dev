@@ -155,6 +155,7 @@ def main():
         print(f"An error occurred in main: {e}")
         tele_bot1.send_telegram(f"An error occurred in main: {e}")
         #check if maintenance mode is activated then just sleep
+        access_token_timer.sleep(900)
         while tele_bot1.receive_message(mode) == 'maintenance':
             access_token_timer.sleep(60)
         #force restart of pi
