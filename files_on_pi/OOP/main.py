@@ -11,7 +11,7 @@ from maintenance import Maintenance
 
 ### GLOBALS ###
 USER_NAME = 'matthew' #ensure this is user computer user name
-SOURCE_FOLDER_PATH = '/home/' + USER_NAME + '/Desktop/Test_upload_folder'
+SOURCE_FOLDER_PATH = '/home/' + USER_NAME + '/Desktop'
 SLEEP_PERIOD_START = 2000 # time as an integer, !!!6:30am = 630 THERE IS NO ZERO IN FRONT!!! ,  8pm = 2000, 8:05pm = 2005, etc.
 SLEEP_PERIOD_END = 2005
 UPLOAD_PERIOD_START = 2000
@@ -30,6 +30,7 @@ def main():
         mode = 'video' # default mode on start up
         require_refresh_token = False
         sleep_mode = False # set to True if in sleep mode
+        upload_mode = False
         #set_sleep_mode = False # this is set by the user if the forces sleep mode
         #set_upload_mode = False
         set_get_new_refresh_token = False
@@ -76,8 +77,8 @@ def main():
                 tele_bot1.send_telegram(f'mode has been changed from {mode} to {new_mode}')
                 mode = new_mode
             #check that a valid mode has been entered and send a message if not
-            if mode not in ('sleep', 'maintenance', 'upload', 'image', 'video', 'ping', 'refresh_token', 'reboot'):
-                message = "please send a valid mode. The valid modes are 'sleep', 'maintenance', 'upload', 'image', 'video', 'ping', 'refresh_token', 'reboot' and the format is 'user_name:mode' if sending a message to a specific pi and 'all:mode' if setting all pi's"
+            if mode not in ('sleep', 'maintenance', 'upload', 'image', 'video', 'ping', 'refresh_token', 'reboot', 'vid_frame_rate', 'img_frame_rate'):
+                message = "please send a valid mode. The valid modes are 'sleep', 'maintenance', 'upload', 'image', 'video', 'ping', 'refresh_token', 'reboot', 'vid_frame_rate', 'img_frame_rate' and the format is 'user_name:mode' if sending a message to a specific pi and 'all:mode' if setting all pi's"
                 tele_bot1.send_telegram(message)
                 access_token_timer.sleep(60)
                 # update the mode variable
@@ -102,17 +103,67 @@ def main():
                         mode = new_mode
                     access_token_timer.sleep(60)
             
+            if mode == 'vid_frame_rate':
+                #TESTED: 06-10-2023 - except teamviewer
+                #changing the frame rate in the capture video function
+                while (mode == 'vid_frame_rate'):
+                    tele_bot1.send_telegram('Please select input a frame rate (frames/sec) using the following format "username:frame_rate"')
+                    access_token_timer.sleep(60)
+                    # receiveing frame rate
+                    new_mode = tele_bot1.receive_message(mode)
+                    # if frame rate has been selected update framerate, else continue requesting
+                    if new_mode != mode:
+                        tele_bot1.send_telegram(f'frame rate is being changed to : {new_mode}')
+                        pi_camera.update_vid_frame_rate(new_mode)
+                        print(new_mode)
+                        mode = new_mode
+                        tele_bot1.send_telegram(f'frame rate has been updated. Please select new mode. Mode will automatically change to video mode if no mode is selected.')
+                        access_token_timer.sleep(60)
+                        new_mode = tele_bot1.receive_message(mode)
+                        #check if mode has been changed else return to video mode
+                        if new_mode != mode:
+                            tele_bot1.send_telegram(f'mode has been changed to : {new_mode}')
+                            mode = new_mode
+                        else:
+                            mode = 'video'
+
+            if mode == 'img_frame_rate':
+                #TESTED: 06-10-2023 - except teamviewer
+                #changing the frame rate in the capture video function
+                while (mode == 'img_frame_rate'):
+                    tele_bot1.send_telegram('Please select input a frame rate (frames/sec) using the following format "username:frame_rate"')
+                    access_token_timer.sleep(60)
+                    # receiveing frame rate
+                    new_mode = tele_bot1.receive_message(mode)
+                    # if frame rate has been selected update framerate, else continue requesting
+                    if new_mode != mode:
+                        tele_bot1.send_telegram(f'frame rate is being changed to : {new_mode}')
+                        pi_camera.update_img_frame_rate(new_mode)
+
+                        print(new_mode)
+                        mode = new_mode
+                        tele_bot1.send_telegram(f'frame rate has been updated. Please select new mode. Mode will automatically change to video mode if no mode is selected.')
+                        access_token_timer.sleep(60)
+                        new_mode = tele_bot1.receive_message(mode)
+                        #check if mode has been changed else return to video mode
+                        if new_mode != mode:
+                            tele_bot1.send_telegram(f'mode has been changed to : {new_mode}')
+                            mode = new_mode
+                        else:
+                            mode = 'video'
+
+            
             # if mode is video and not sleep or upload = True 
             if mode == 'video' and not sleep_mode and not upload_mode:
                 # take videos
                 pi_camera.capture_video()
-                #print('take video')
+                print('take video')
 
             # if mode is image and not sleep or upload = True 
             if mode == 'image' and not sleep_mode and not upload_mode:
                 # take pictures
                 pi_camera.capture_images()
-                #print('take image')
+                print('take image')
                 # take images
             
 
@@ -142,9 +193,9 @@ def main():
                 # call upload folders function
                 drive_upload1.upload_folders_to_drive()
                 # set upload_mode to False
-                upload_mode = False
+                #upload_mode = False
             
-            if mode == 'sleep' or sleep_mode:
+            if mode == 'sleep' or sleep_mode and not upload_mode:
             #TESTED            
                 access_token_timer.sleep(60)
                 print('sleeping')
@@ -155,11 +206,11 @@ def main():
         print(f"An error occurred in main: {e}")
         tele_bot1.send_telegram(f"An error occurred in main: {e}")
         #check if maintenance mode is activated then just sleep
+        traceback.print_exc()
         access_token_timer.sleep(900)
         while tele_bot1.receive_message(mode) == 'maintenance':
             access_token_timer.sleep(60)
         #force restart of pi
-        traceback.print_exc()
         os.system('sudo reboot')
 
 if __name__ == "__main__":

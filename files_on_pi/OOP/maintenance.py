@@ -25,8 +25,9 @@ class Maintenance:
             return ip_address
         except Exception as e:
         # print error to file
+            self.timer.sleep(120)
             e = str(e)
-            function_name = 'DriveAuth.retrieve_refresh_token:'
+            function_name = 'Maintenance.retrieve_refresh_token:'
             self.telegram_bot.send_telegram(f"{function_name}: {e}")          
             return 'issue with function could not get the ip address'  
 

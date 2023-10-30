@@ -8,9 +8,9 @@ from owntime import Timer
 from telegram import TelegramBot
 
 # GLOBALS
-IMG_SEC_INTERVAL_BETWEEN_IMAGES = 1
-IMG_SEC_BETWEEN_FOLDER_UPLOAD = 60
-VID_SEC_LENGTH_OF_VIDEO = 60
+#IMG_SEC_INTERVAL_BETWEEN_IMAGES = 1
+#IMG_SEC_BETWEEN_FOLDER_UPLOAD = 60
+#VID_SEC_LENGTH_OF_VIDEO = 60
 
 class Camera:
     def __init__(self, user_name): #source_folder_path):    REMOVED
@@ -21,6 +21,10 @@ class Camera:
         self.timer = Timer()
         self.camera = picamera2.Picamera2()
         self.tele_bot_cam = TelegramBot(self.user_name)
+        self.img_per_sec = 1
+        self.img_burst_length = 60
+        self.vid_length_of_vid = 60
+        self.vid_frame_rate = 25
 
     def create_folder(self, path):
         '''Create folder at the path with folder name
@@ -31,7 +35,9 @@ class Camera:
                 os.makedirs(path)
             
         except Exception as e:  
-            function_name = 'DriveAuth.create_folder'
+            function_name = 'Camera.create_folder'
+            e = str(e)
+            self.timer.sleep(120)
             self.tele_bot_cam.send_telegram(function_name + e) 
 
    
@@ -60,7 +66,8 @@ class Camera:
             while (not_expired):
 
                 # Sleep for set inteval
-                self.timer.sleep(IMG_SEC_INTERVAL_BETWEEN_IMAGES)
+                sleep_int = (1/self.img_per_sec)
+                self.timer.sleep(sleep_int)
 
                 # Get the current time for naming the image
                 current_time = self.timer.get_date_time()
@@ -73,7 +80,7 @@ class Camera:
                 
                 # check if time has expired 
                 elapsed_time = self.timer.check_elapsed_time()
-                if elapsed_time > (IMG_SEC_BETWEEN_FOLDER_UPLOAD):
+                if elapsed_time > (self.img_burst_length):
                     not_expired = False
                 
                 # iterate counter
@@ -83,8 +90,9 @@ class Camera:
             self.camera.stop()
 
         except Exception as e:  
-            function_name = 'DriveAuth.capture_images:'
+            function_name = 'Camera.capture_images:'
             e = str(e)
+            self.timer.sleep(120)
             self.tele_bot_cam.send_telegram(function_name + e) 
 
     def capture_video(self):
@@ -106,18 +114,45 @@ class Camera:
             #take video of set length of time
             #self.camera.start_and_record_video(f'{self.user_name}_video_{current_time}.mp4', quality='Quality.VERY_HIGH', duration=VID_SEC_LENGTH_OF_VIDEO)
             vid_path = os.path.join(desktop_path, (f'{self.user_name}_video_{current_time}.mp4'))
-            video_config = self.camera.create_video_configuration()
+            video_config = self.camera.create_video_configuration(controls={"FrameRate": self.vid_frame_rate})
             self.camera.configure(video_config)
             encoder = H264Encoder()
             output = FfmpegOutput(vid_path)
             self.camera.start_recording(encoder, output, Quality.VERY_HIGH)
-            self.timer.sleep(VID_SEC_LENGTH_OF_VIDEO)
+            self.timer.sleep(self.vid_length_of_vid)
             self.camera.stop_recording()
 
         except Exception as e:  
-            function_name = 'DriveAuth.capture_video:'
+            function_name = 'Camera.capture_video:'
             e = str(e)
+            self.timer.sleep(120)
             self.tele_bot_cam.send_telegram(function_name + e) 
+        
+    def update_vid_frame_rate(self, mode):
+        '''takes in the frame rate and updates the frame rate that the videos are 
+            taken at 
+            Params: frame rate (frames per second)'''
+        try:
+            self.vid_frame_rate = int(mode)
+
+        except Exception as e:  
+            function_name = 'Camera.update_vid_frame_rate:'
+            e = str(e)
+            self.timer.sleep(120)
+            self.tele_bot_cam.send_telegram(function_name + e) 
+
+    def update_img_frame_rate(self, mode):
+        '''takes in the frame rate and updates the frame rate that the pictures are 
+            taken at 
+            Params: frame rate (frames per second)'''
+        try:
+            self.img_per_sec = int(mode)
+
+        except Exception as e:  
+            function_name = 'Camera.update_img_frame_rate:'
+            e = str(e)
+            self.timer.sleep(120)
+            self.tele_bot_cam.send_telegram(function_name + e)
             
 #####TEST
 '''

@@ -1,6 +1,7 @@
 import telepot
 import sys
 import time
+from owntime import Timer
 
 ### TELEGRAM ###
 TELE_TOKEN = 'token'
@@ -10,6 +11,7 @@ class TelegramBot:
     def __init__(self, device_name):
         self.bot = telepot.Bot(TELE_TOKEN)
         self.device_name = device_name
+        self.timer = Timer()
     
     def print_error_to_file(self, e, function_name):
         #TESTED: 06-10-2023
@@ -28,15 +30,23 @@ class TelegramBot:
 
     def get_text_after_last_colon(self, input_string, mode):
         #TESTED: 06-10-2023
-        last_colon_index = input_string.rfind(':')
-        if last_colon_index != -1:
-            new_string = input_string[last_colon_index + 1:].strip()
-            #remove the blank space if there is one
-            if new_string[0] == ' ':
-                new_string = new_string[1:]
-            return new_string
-        else:
-            self.send_telegram('it seems that you did not include a colon in your message. The format to change the mode is: "user_name:mode" or "all:mode".The current mode will remain. Please try again.')
+        try:
+            last_colon_index = input_string.rfind(':')
+            if last_colon_index != -1:
+                new_string = input_string[last_colon_index + 1:].strip()
+                #remove the blank space if there is one
+                if new_string[0] == ' ':
+                    new_string = new_string[1:]
+                return new_string
+            else:
+                self.send_telegram('it seems that you did not include a colon in your message. The format to change the mode is: "user_name:mode" or "all:mode".The current mode will remain. Please try again.')
+                return mode
+        
+        except Exception as e:  
+            e = str(e)
+            self.timer.sleep(120)    
+            function_name = 'Telegram.get_text_after_last_colon'
+            self.telegram_bot.send_telegram(function_name + e)
             return mode
 
     def receive_message(self, mode):
@@ -61,6 +71,7 @@ class TelegramBot:
         except Exception as e:
             # print error to file
             e = str(e)
+            self.timer.sleep(120)
             function_name = 'receive_telegram'
             self.print_error_to_file(e, function_name)
             return False
@@ -75,6 +86,7 @@ class TelegramBot:
         except Exception as e:
             # print error to file
             e = str(e)
+            self.timer.sleep(120)
             function_name = 'send_telegram'
             self.print_error_to_file(e, function_name)
             return False            
