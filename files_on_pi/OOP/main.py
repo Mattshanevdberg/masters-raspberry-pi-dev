@@ -30,6 +30,7 @@ def main():
         mode = 'video' # default mode on start up
         require_refresh_token = False
         sleep_mode = False # set to True if in sleep mode
+        upload_mode = False
         #set_sleep_mode = False # this is set by the user if the forces sleep mode
         #set_upload_mode = False
         set_get_new_refresh_token = False
@@ -142,9 +143,9 @@ def main():
                 # call upload folders function
                 drive_upload1.upload_folders_to_drive()
                 # set upload_mode to False
-                upload_mode = False
+                #upload_mode = False
             
-            if mode == 'sleep' or sleep_mode:
+            if mode == 'sleep' or sleep_mode and not upload_mode:
             #TESTED            
                 access_token_timer.sleep(60)
                 print('sleeping')
@@ -155,11 +156,11 @@ def main():
         print(f"An error occurred in main: {e}")
         tele_bot1.send_telegram(f"An error occurred in main: {e}")
         #check if maintenance mode is activated then just sleep
+        traceback.print_exc()
         access_token_timer.sleep(900)
         while tele_bot1.receive_message(mode) == 'maintenance':
             access_token_timer.sleep(60)
         #force restart of pi
-        traceback.print_exc()
         os.system('sudo reboot')
 
 if __name__ == "__main__":

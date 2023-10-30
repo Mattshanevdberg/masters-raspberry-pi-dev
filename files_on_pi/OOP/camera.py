@@ -31,7 +31,9 @@ class Camera:
                 os.makedirs(path)
             
         except Exception as e:  
-            function_name = 'DriveAuth.create_folder'
+            function_name = 'Camera.create_folder'
+            e = str(e)
+            self.timer.sleep(120)
             self.tele_bot_cam.send_telegram(function_name + e) 
 
    
@@ -83,8 +85,9 @@ class Camera:
             self.camera.stop()
 
         except Exception as e:  
-            function_name = 'DriveAuth.capture_images:'
+            function_name = 'Camera.capture_images:'
             e = str(e)
+            self.timer.sleep(120)
             self.tele_bot_cam.send_telegram(function_name + e) 
 
     def capture_video(self):
@@ -115,8 +118,9 @@ class Camera:
             self.camera.stop_recording()
 
         except Exception as e:  
-            function_name = 'DriveAuth.capture_video:'
+            function_name = 'Camera.capture_video:'
             e = str(e)
+            self.timer.sleep(120)
             self.tele_bot_cam.send_telegram(function_name + e) 
             
 #####TEST

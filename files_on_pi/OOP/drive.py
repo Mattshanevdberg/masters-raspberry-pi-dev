@@ -59,6 +59,7 @@ class DriveAuth:
             return False
         except Exception as e:
             e = str(e)
+            self.refresh_token_timer.sleep(120)
             function_name = 'DriveAuth.retrieve_refresh_token:'
             self.telegram_bot.send_telegram(f"{function_name}: {e}")
             return False 
@@ -71,6 +72,7 @@ class DriveAuth:
                 self.telegram_bot.send_telegram('Refresh token saved successfully.')
         except Exception as e:
             e = str(e)
+            self.refresh_token_timer.sleep(120)
             function_name = 'DriveAuth.save_refresh_token:'
             self.telegram_bot.send_telegram(f"{function_name}: {e}")            
     
@@ -94,9 +96,10 @@ class DriveAuth:
             self.update_dictionary_values()
             with open('token.json', 'w') as file:
                 json.dump(self.tokens, file)
-                self.telegram_bot.send_telegram('Token Creds saved successfully.')
+                #self.telegram_bot.send_telegram('Token Creds saved successfully.')
         except Exception as e:  
-            e = str(e)          
+            e = str(e)
+            self.refresh_token_timer.sleep(120)       
             function_name = 'DriveAuth.save_token_creds:'
             self.telegram_bot.send_telegram(f"{function_name}: An error occurred while saving the Token Creds: {e}")
     
@@ -126,6 +129,7 @@ class DriveAuth:
                 #return None, None, None, None
         except Exception as e:
             e = str(e)
+            self.refresh_token_timer.sleep(120)
             function_name = 'DriveAuth.request_device_authorization:'
             self.telegram_bot.send_telegram(function_name + e)        
     
@@ -164,6 +168,7 @@ class DriveAuth:
                 #return None, None
         except Exception as e:
             e = str(e)
+            self.refresh_token_timer.sleep(120)
             function_name = 'DriveAuth.request_access_token:'
             self.telegram_bot.send_telegram(function_name + e)           
 
@@ -189,6 +194,7 @@ class DriveAuth:
 
         except Exception as e:
             e = str(e)
+            self.refresh_token_timer.sleep(120)
             function_name = 'DriveAuth.poll_for_token:'
             self.telegram_bot.send_telegram(function_name + e)    
 
@@ -219,6 +225,7 @@ class DriveAuth:
             #return access_token, refresh_token
         except Exception as e: 
             e = str(e)
+            self.refresh_token_timer.sleep(120)
             function_name = 'DriveAuth.get_new_refresh_token'
             self.telegram_bot.send_telegram(function_name + e)
 
@@ -227,34 +234,47 @@ class DriveAuth:
             '''
         #TESTED 09-10-2023
 
-        
-        #start timer to determine when the access token will expire
-        self.access_token_timer.start_timer
-        #request the access token using the refresh token 
-        response = requests.post(REFRESH_URL, auth=HTTPBasicAuth(CLIENT_ID, CLIENT_SECRET), data={
-            'grant_type': 'refresh_token',
-            'refresh_token': self.refresh_token
-        })
+        try:
+            #start timer to determine when the access token will expire
+            self.access_token_timer.start_timer
+            #request the access token using the refresh token 
+            response = requests.post(REFRESH_URL, auth=HTTPBasicAuth(CLIENT_ID, CLIENT_SECRET), data={
+                'grant_type': 'refresh_token',
+                'refresh_token': self.refresh_token
+            })
 
-        if response.status_code == 200:
-            tokens = response.json()
-            #print('Access token:', tokens['access_token'])
-            self.access_token = tokens['access_token']
-            self.access_token_expires_in = tokens['expires_in']
-            self.save_token_creds()
-            #return tokens['access_token']
-        else:
-            self.telegram_bot.send_telegram('Access token refresh failed. there is likely something wrong with the refresh token. try deleting it and restarting the pi. Otherwise see the error below..')
-            error_code = str(response.status_code)
-            self.telegram_bot.send_telegram('function:DriveAuth.refresh_access_token: Access token refresh failed.' + 'error: ' + error_code + response.text)
-            return None   
+            if response.status_code == 200:
+                tokens = response.json()
+                #print('Access token:', tokens['access_token'])
+                self.access_token = tokens['access_token']
+                self.access_token_expires_in = tokens['expires_in']
+                self.save_token_creds()
+                #return tokens['access_token']
+            else:
+                self.telegram_bot.send_telegram('Access token refresh failed. there is likely something wrong with the refresh token. try deleting it and restarting the pi. Otherwise see the error below..')
+                error_code = str(response.status_code)
+                self.telegram_bot.send_telegram('function:DriveAuth.refresh_access_token: Access token refresh failed.' + 'error: ' + error_code + response.text)
+                return None 
+        
+        except Exception as e:         
+            e = str(e)
+            self.refresh_token_timer.sleep(120)      
+            function_name = 'DriveAuth.refresh_access_token'
+            self.telegram_bot.send_telegram(function_name + e) 
 
     def check_access_token_expired(self):
         '''checks if the access token has expiered and if it has requests a new one'''
-        elapsed_time = self.access_token_timer.check_elapsed_time 
+        try:
+            elapsed_time = self.access_token_timer.check_elapsed_time 
 
-        if elapsed_time > (self.access_token_expires_in - 3):
-            self.request_access_token()
+            if elapsed_time > (self.access_token_expires_in - 3):
+                self.request_access_token()
+
+        except Exception as e:         
+            e = str(e)
+            self.refresh_token_timer.sleep(120)      
+            function_name = 'DriveAuth.check_access_token_expired'
+            self.telegram_bot.send_telegram(function_name + e) 
 
 class DriveUpload:
     def __init__(self, user_name, drive_auth, access_token_timer):
@@ -295,7 +315,8 @@ class DriveUpload:
 
         except Exception as e: 
             e = str(e)
-            function_name = 'DriveAuth.collect_folder_paths_to_upload'
+            self.refresh_token_timer.sleep(120)    
+            function_name = 'DriveUpload.collect_folder_paths_to_upload'
             self.telegram_bot.send_telegram(function_name + e)
     
     def delete_folders(self):
@@ -306,8 +327,9 @@ class DriveUpload:
                 print(f'Deleted folder: {folder_path}')
             except Exception as e:
                 e = str(e)
+                self.refresh_token_timer.sleep(120)    
                 print(f'Failed to delete folder {folder_path}: {e}')
-                function_name = 'DriveAuth.delete_folders'
+                function_name = 'DriveUpload.delete_folders'
                 self.telegram_bot.send_telegram(function_name + e)
 
     def drive_create_folder(self, desired_folder_name):
@@ -338,7 +360,9 @@ class DriveUpload:
             #return file.get('id')
 
         except HttpError as error:
-            function_name = 'DriveAuth.drive_create_folder'
+            function_name = 'DriveUpload.drive_create_folder'
+            e = str(e)
+            self.refresh_token_timer.sleep(120)    
             self.telegram_bot.send_telegram(function_name + error)
                 
         except Exception as e:  
@@ -368,7 +392,8 @@ class DriveUpload:
 
         except Exception as e:  
             e = str(e)
-            function_name = 'DriveAuth.drive_upload_image'
+            self.refresh_token_timer.sleep(120)    
+            function_name = 'DriveUpload.drive_upload_image'
             self.telegram_bot.send_telegram(function_name + e) 
 
     def drive_upload_video(self, file_name, file_path):
@@ -392,7 +417,8 @@ class DriveUpload:
 
         except Exception as e: 
             e = str(e) 
-            function_name = 'DriveAuth.drive_upload_video'
+            self.refresh_token_timer.sleep(120)    
+            function_name = 'DriveUpload.drive_upload_video'
             self.telegram_bot.send_telegram(function_name + e)
         
     def upload_folders_to_drive(self):
@@ -443,7 +469,8 @@ class DriveUpload:
                                             
         except Exception as e:  
             e = str(e)
-            function_name = 'DriveAuth.upload_folders_to_drive'
+            self.refresh_token_timer.sleep(120)    
+            function_name = 'DriveUpload.upload_folders_to_drive'
             self.telegram_bot.send_telegram(function_name + e)
 
 
