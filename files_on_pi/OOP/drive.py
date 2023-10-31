@@ -315,7 +315,7 @@ class DriveUpload:
 
         except Exception as e: 
             e = str(e)
-            self.refresh_token_timer.sleep(120)    
+            self.upload_timer.sleep(120)    
             function_name = 'DriveUpload.collect_folder_paths_to_upload'
             self.telegram_bot.send_telegram(function_name + e)
     
@@ -327,7 +327,7 @@ class DriveUpload:
                 print(f'Deleted folder: {folder_path}')
             except Exception as e:
                 e = str(e)
-                self.refresh_token_timer.sleep(120)    
+                self.upload_timer.sleep(120)    
                 print(f'Failed to delete folder {folder_path}: {e}')
                 function_name = 'DriveUpload.delete_folders'
                 self.telegram_bot.send_telegram(function_name + e)
@@ -362,7 +362,7 @@ class DriveUpload:
         except HttpError as error:
             function_name = 'DriveUpload.drive_create_folder'
             e = str(e)
-            self.refresh_token_timer.sleep(120)    
+            self.upload_timer.sleep(120)    
             self.telegram_bot.send_telegram(function_name + error)
                 
         except Exception as e:  
@@ -392,7 +392,7 @@ class DriveUpload:
 
         except Exception as e:  
             e = str(e)
-            self.refresh_token_timer.sleep(120)    
+            self.upload_timer.sleep(120)    
             function_name = 'DriveUpload.drive_upload_image'
             self.telegram_bot.send_telegram(function_name + e) 
 
@@ -417,7 +417,7 @@ class DriveUpload:
 
         except Exception as e: 
             e = str(e) 
-            self.refresh_token_timer.sleep(120)    
+            self.upload_timer.sleep(120)    
             function_name = 'DriveUpload.drive_upload_video'
             self.telegram_bot.send_telegram(function_name + e)
         
@@ -469,7 +469,7 @@ class DriveUpload:
                                             
         except Exception as e:  
             e = str(e)
-            self.refresh_token_timer.sleep(120)    
+            self.upload_timer.sleep(120)    
             function_name = 'DriveUpload.upload_folders_to_drive'
             self.telegram_bot.send_telegram(function_name + e)
 
