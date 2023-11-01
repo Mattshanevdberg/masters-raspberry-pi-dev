@@ -12,10 +12,16 @@ from maintenance import Maintenance
 ### GLOBALS ###
 USER_NAME = 'matthew' #ensure this is user computer user name
 SOURCE_FOLDER_PATH = '/home/' + USER_NAME + '/Desktop'
-SLEEP_PERIOD_START = 2000 # time as an integer, !!!6:30am = 630 THERE IS NO ZERO IN FRONT!!! ,  8pm = 2000, 8:05pm = 2005, etc.
-SLEEP_PERIOD_END = 2005
-UPLOAD_PERIOD_START = 2000
-UPLOAD_PERIOD_END = 2005
+# time as an integer, !!!6:30am = 630 THERE IS NO ZERO IN FRONT!!! ,  8pm = 2000, 8:05pm = 2005, etc.
+# if the sleep/upload period falls over over midnight (is over 2 days) please seperate the time into period1 ending at 2359 and period2 starting at 1 
+SLEEP_PERIOD_START = 1700 
+SLEEP_PERIOD_END = 2359
+SLEEP_PERIOD_START2 = 1 # time as an integer, !!!6:30am = 630 THERE IS NO ZERO IN FRONT!!! ,  8pm = 2000, 8:05pm = 2005, etc.
+SLEEP_PERIOD_END2 = 530
+UPLOAD_PERIOD_START = 1700
+UPLOAD_PERIOD_END = 2359
+UPLOAD_PERIOD_START2 = 1
+UPLOAD_PERIOD_END2 = 530
 
 ### MAIN LOOP ###
 def main():
@@ -57,13 +63,13 @@ def main():
                 access_token_timer.sleep(60)
             
             # if current time is in sleep period or user has set the sleep mode
-            if access_token_timer.is_current_time_in_window(SLEEP_PERIOD_START, SLEEP_PERIOD_END):
+            if access_token_timer.is_current_time_in_window(SLEEP_PERIOD_START, SLEEP_PERIOD_END) or access_token_timer.is_current_time_in_window(SLEEP_PERIOD_START2, SLEEP_PERIOD_END2):
                 sleep_mode = True
             else: 
                 sleep_mode = False
             
             # if current time is in upload period or upload mode
-            if access_token_timer.is_current_time_in_window(UPLOAD_PERIOD_START, UPLOAD_PERIOD_END):
+            if access_token_timer.is_current_time_in_window(UPLOAD_PERIOD_START, UPLOAD_PERIOD_END) or access_token_timer.is_current_time_in_window(UPLOAD_PERIOD_START2, UPLOAD_PERIOD_END2):
                 upload_mode = True       
             else: 
                 upload_mode = False

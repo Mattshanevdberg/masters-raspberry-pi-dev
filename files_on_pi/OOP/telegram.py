@@ -74,7 +74,7 @@ class TelegramBot:
             self.timer.sleep(120)
             function_name = 'receive_telegram'
             self.print_error_to_file(e, function_name)
-            return False
+            return mode
 
     def send_telegram(self, message):
         #TESTED: 06-10-2023
