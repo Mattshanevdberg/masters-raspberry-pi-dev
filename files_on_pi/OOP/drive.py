@@ -361,7 +361,7 @@ class DriveUpload:
 
         except HttpError as error:
             function_name = 'DriveUpload.drive_create_folder'
-            e = str(e)
+            error = str(error)
             self.upload_timer.sleep(120)    
             self.telegram_bot.send_telegram(function_name + error)
                 
