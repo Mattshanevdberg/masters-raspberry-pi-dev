@@ -161,17 +161,24 @@ def main():
             
             # if mode is video and not sleep or upload = True 
             if mode == 'video' and not sleep_mode and not upload_mode:
-                # take videos
-                pi_camera.capture_video()
-                print('take video')
+                # check if the system is running out of memory and skip taking videos if this is the case
+                if not drive_upload1.check_for_low_memory():
+                    # take videos
+                    pi_camera.capture_video()
+                    print('take video')
+                else: 
+                    tele_bot1.send_telegram("there is less than 1GB of memory left on the device. More videos will not be taken. Please change to upload mode or VNC into the pi and delete some videos manually")
 
             # if mode is image and not sleep or upload = True 
             if mode == 'image' and not sleep_mode and not upload_mode:
-                # take pictures
-                pi_camera.capture_images()
-                print('take image')
-                # take images
-            
+                # check if the system is running out of memory and skip taking images if this is the case
+                if not drive_upload1.check_for_low_memory():
+                    # take pictures
+                    pi_camera.capture_images()
+                    print('take image')
+                    # take images
+                else: 
+                    tele_bot1.send_telegram("there is less than 1GB of memory left on the device. More videos will not be taken. Please change to upload mode or VNC into the pi and delete some videos manually")            
 
             # if mode is ping
             if mode == 'ping': 
