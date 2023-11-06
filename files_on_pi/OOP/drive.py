@@ -9,6 +9,7 @@ from requests.auth import HTTPBasicAuth
 import os
 import json
 import shutil
+import psutil #this is for checking momory
 ### OWN FUNCTIONS ###
 from owntime import Timer
 from telegram import TelegramBot
@@ -472,6 +473,24 @@ class DriveUpload:
             self.upload_timer.sleep(120)    
             function_name = 'DriveUpload.upload_folders_to_drive'
             self.telegram_bot.send_telegram(function_name + e)
+
+    def check_for_low_memory(self):
+        '''checks the memory available on the local system and if it is less than 1GB, returns true\
+            param: 
+            Returns: True is less than 1GB memory remains, false more than 1 GB remains'''
+        #TESTED 09-10-2023
+        try:
+            threshold = 1 * 1024 * 1024 * 1024  # 1 GB in bytes
+            available_memory = psutil.virtual_memory().available
+            return available_memory < threshold
+
+        except Exception as e: 
+            e = str(e) 
+            self.upload_timer.sleep(120)    
+            function_name = 'DriveUpload.check_for_low_memory'
+            self.telegram_bot.send_telegram(function_name + e)
+            return False
+
 
 
 
