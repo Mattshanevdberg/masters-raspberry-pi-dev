@@ -9,7 +9,8 @@ from requests.auth import HTTPBasicAuth
 import os
 import json
 import shutil
-import psutil #this is for checking momory
+#import psutil #this is for checking momory
+#import shutil #this is for checking momory
 ### OWN FUNCTIONS ###
 from owntime import Timer
 from telegram import TelegramBot
@@ -481,8 +482,8 @@ class DriveUpload:
         #TESTED 09-10-2023
         try:
             threshold = 1 * 1024 * 1024 * 1024  # 1 GB in bytes
-            available_memory = psutil.virtual_memory().available
-            return available_memory < threshold
+            available_memory = shutil.disk_usage('/')
+            return available_memory.free < threshold
 
         except Exception as e: 
             e = str(e) 
