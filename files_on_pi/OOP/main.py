@@ -168,6 +168,7 @@ def main():
                     print('take video')
                 else: 
                     tele_bot1.send_telegram("there is less than 1GB of memory left on the device. More videos will not be taken. Please change to upload mode or VNC into the pi and delete some videos manually")
+                    access_token_timer.sleep(180) 
 
             # if mode is image and not sleep or upload = True 
             if mode == 'image' and not sleep_mode and not upload_mode:
@@ -178,7 +179,8 @@ def main():
                     print('take image')
                     # take images
                 else: 
-                    tele_bot1.send_telegram("there is less than 1GB of memory left on the device. More videos will not be taken. Please change to upload mode or VNC into the pi and delete some videos manually")            
+                    tele_bot1.send_telegram("there is less than 1GB of memory left on the device. More videos will not be taken. Please change to upload mode or VNC into the pi and delete some videos manually")
+                    access_token_timer.sleep(180)            
 
             # if mode is ping
             if mode == 'ping': 
