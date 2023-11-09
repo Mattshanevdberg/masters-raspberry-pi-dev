@@ -431,43 +431,45 @@ class DriveUpload:
         try:
             #get list of folders to upload
             self.collect_folder_paths_to_upload()
+            if self.list_of_folders:
+                # send message that uploading files
+                self.telegram_bot.send_telegram('uploading files...')
+                for folder in self.list_of_folders:
+                    # create a folder on the drive
+                    #test
+                    #folder = '/home/matthew/Desktop/Test_upload_video'
+                    #end test
+                    #print(folder)
+                    self.drive_create_folder(os.path.basename(folder))
 
-            for folder in self.list_of_folders:
-                # create a folder on the drive
-                #test
-                #folder = '/home/matthew/Desktop/Test_upload_video'
-                #end test
-                #print(folder)
-                self.drive_create_folder(os.path.basename(folder))
+                    # List files in the local folder
+                    files_to_upload = os.listdir(folder)
 
-                # List files in the local folder
-                files_to_upload = os.listdir(folder)
+                    if 'image' in folder:
+                        for file_name in files_to_upload:
+                            file_path = os.path.join(folder, file_name)
+                        
+                            # Upload each file to the created subfolder on Google Drive
+                            self.drive_upload_image(file_name, file_path)
 
-                if 'image' in folder:
-                    for file_name in files_to_upload:
-                        file_path = os.path.join(folder, file_name)
+                            #print(f"Uploaded {file_name} to Google Drive")
                     
-                        # Upload each file to the created subfolder on Google Drive
-                        self.drive_upload_image(file_name, file_path)
-
-                        #print(f"Uploaded {file_name} to Google Drive")
-                
-                if 'video' in folder:
-                    for file_name in files_to_upload:
-                        file_path = os.path.join(folder, file_name)
+                    if 'video' in folder:
+                        for file_name in files_to_upload:
+                            file_path = os.path.join(folder, file_name)
+                        
+                            # Upload each file to the created subfolder on Google Drive
+                            self.drive_upload_video(file_name, file_path)
                     
-                        # Upload each file to the created subfolder on Google Drive
-                        self.drive_upload_video(file_name, file_path)
-                
-                #pause for 3 seconds before uploading next folder
-                self.upload_timer.sleep(3)
+                    #pause for 3 seconds before uploading next folder
+                    self.upload_timer.sleep(3)
 
-                        #print(f"Uploaded {file_name} to Google Drive")
-            # send a message to inform the upload is finished
-            self.telegram_bot.send_telegram('upload complete... deleting folders on desktop..')
-            self.delete_folders()
-            self.telegram_bot.send_telegram('folders have been deleted')
-            self.upload_timer.sleep(60)
+                            #print(f"Uploaded {file_name} to Google Drive")
+                # send a message to inform the upload is finished
+                self.telegram_bot.send_telegram('upload complete... deleting folders on desktop..')
+                self.delete_folders()
+                self.telegram_bot.send_telegram('folders have been deleted')
+                self.upload_timer.sleep(60)
                                             
         except Exception as e:  
             e = str(e)
