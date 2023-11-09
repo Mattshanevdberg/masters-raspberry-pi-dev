@@ -203,8 +203,7 @@ def main():
             # if mode is upload
             if mode == 'upload' or upload_mode:
             #TESTED
-                # send message that uploading files
-                tele_bot1.send_telegram('uploading files...')
+
                 # call upload folders function
                 drive_upload1.upload_folders_to_drive()
                 # set upload_mode to False
