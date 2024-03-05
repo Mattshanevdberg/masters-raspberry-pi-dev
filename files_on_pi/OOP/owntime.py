@@ -1,10 +1,55 @@
 import time
 import datetime
+import requests
+import subprocess
 
 class Timer:
     def __init__(self):
         self.start_time = None
         self.elapsed_time = None
+
+    def set_system_clock_from_web(self):
+        '''Sets the system clock for the raspberry pi to the current date and time in GMT+2'''
+        try:
+            # Make a request to the worldtimeapi to get the current time in GMT+2
+            response = requests.get('http://worldtimeapi.org/api/timezone/Africa/Johannesburg')
+            response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
+            
+            # Parse the response JSON and extract the datetime string
+            datetime_str = response.json()['datetime']
+            
+            # Convert the datetime string to a datetime object
+            datetime_obj = datetime.datetime.fromisoformat(datetime_str)
+            
+            # Format the datetime object for setting the system clock
+            # The format for the 'date' command should be 'YYYY-MM-DD HH:MM:SS'
+            formatted_datetime_for_command = datetime_obj.strftime('%Y-%m-%d %H:%M:%S')
+
+            # Command to set the system date and time
+            set_time_command = f'date -s "{formatted_datetime_for_command}"'
+            
+            # Execute the command
+            subprocess.run(set_time_command, shell=True, check=True)
+            
+            return True
+        
+        except requests.exceptions.RequestException as e:
+            # Handle any errors that occur during the request
+            e = str(e)
+            self.sleep(120)    
+            function_name = 'Timer.set_system_clock_from_web (web error)'
+            self.telegram_bot.send_telegram(function_name + e)
+            print(e)
+            return False
+        
+        except subprocess.CalledProcessError as e:
+            # Handle any errors that occur during the subprocess
+            e = str(e)
+            self.sleep(120)    
+            function_name = 'Timer.set_system_clock_from_web (system clock error)'
+            self.telegram_bot.send_telegram(function_name + e)
+            print(e)
+            return False        
 
     def start_timer(self):
         #TESTED: 06-10-2023
@@ -47,3 +92,35 @@ class Timer:
             function_name = 'Timer.is_current_time_in_window'
             self.telegram_bot.send_telegram(function_name + e)
             return False
+        
+    def get_current_datetime_from_web(self):
+        '''This function is currently not in use'''
+        try:
+            # Make a request to the worldtimeapi to get the current time in GMT+2
+            response = requests.get('http://worldtimeapi.org/api/timezone/Africa/Johannesburg')
+            response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
+            
+            # Parse the response JSON and extract the datetime string
+            datetime_str = response.json()['datetime']
+            
+            # Convert the datetime string to a datetime object
+            datetime_obj = datetime.datetime.fromisoformat(datetime_str)
+            
+            # Format the datetime object as a string in the specified format
+            formatted_datetime = datetime_obj.strftime('%Y-%m-%d_%H-%M')
+            
+            return formatted_datetime
+        except requests.exceptions.RequestException as e:
+            # Handle any errors that occur during the request
+            
+            e = str(e)
+            self.sleep(120)    
+            function_name = 'Timer.get_current_datetime_from_web'
+            self.telegram_bot.send_telegram(function_name + e)
+            print(e)
+            return False
+        
+# Test 
+#timer_ = Timer()
+#print(timer_.set_system_clock_from_web())
+#print(timer_.is_current_time_in_window(500,600))
