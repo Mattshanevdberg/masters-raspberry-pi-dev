@@ -41,6 +41,9 @@ def main():
         #set_upload_mode = False
         set_get_new_refresh_token = False
 
+        # Set the system time to the time found on the web
+        access_token_timer.set_system_clock_from_web()
+
         # send start up message (User_name)
         tele_bot1.send_telegram("Finished my nap, back to work!")
 

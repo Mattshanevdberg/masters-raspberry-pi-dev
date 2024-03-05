@@ -88,7 +88,7 @@ class Timer:
         
         except Exception as e:  
             e = str(e)
-            self.refresh_token_timer.sleep(120)    
+            self.sleep(120)    
             function_name = 'Timer.is_current_time_in_window'
             self.telegram_bot.send_telegram(function_name + e)
             return False
