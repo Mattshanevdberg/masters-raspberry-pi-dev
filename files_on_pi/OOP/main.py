@@ -14,20 +14,20 @@ USER_NAME = 'matthew' #ensure this is user computer user name
 SOURCE_FOLDER_PATH = '/home/' + USER_NAME + '/Desktop'
 # time as an integer, !!!6:30am = 630 THERE IS NO ZERO IN FRONT!!! ,  8pm = 2000, 8:05pm = 2005, etc.
 # if the sleep/upload period falls over over midnight (is over 2 days) please seperate the time into period1 ending at 2359 and period2 starting at 1 
-SLEEP_PERIOD_START = 1700 
+SLEEP_PERIOD_START = 1930 
 SLEEP_PERIOD_END = 2359
 SLEEP_PERIOD_START2 = 1 # time as an integer, !!!6:30am = 630 THERE IS NO ZERO IN FRONT!!! ,  8pm = 2000, 8:05pm = 2005, etc.
-SLEEP_PERIOD_END2 = 530
-UPLOAD_PERIOD_START = 1700
+SLEEP_PERIOD_END2 = 630
+UPLOAD_PERIOD_START = 1930
 UPLOAD_PERIOD_END = 2359
 UPLOAD_PERIOD_START2 = 1
-UPLOAD_PERIOD_END2 = 530
+UPLOAD_PERIOD_END2 = 630
 
 ### MAIN LOOP ###
 def main():
     try:
         # Instantiate your custom classes and objects and variables
-        access_token_timer = Timer()
+        access_token_timer = Timer(USER_NAME)
         drive_auth1 = DriveAuth(USER_NAME, access_token_timer)
         drive_upload1 = DriveUpload(USER_NAME, drive_auth1, access_token_timer)
         pi_camera = Camera(USER_NAME)
