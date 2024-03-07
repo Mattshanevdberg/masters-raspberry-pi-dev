@@ -23,6 +23,9 @@ UPLOAD_PERIOD_END = 2359
 UPLOAD_PERIOD_START2 = 1
 UPLOAD_PERIOD_END2 = 630
 
+#Exception catching in declarations
+tele_bot0 = TelegramBot(USER_NAME)
+
 ### MAIN LOOP ###
 def main():
     try:
@@ -220,6 +223,8 @@ def main():
     except Exception as e:
         # Handle exceptions or errors gracefully
         e = str(e)
+        print(f'If there is not a message after this, then an error occurred in the declarations in main: {e}, otherwise it occured in main')
+        tele_bot0.send_telegram(f"An error occurred in main: {e}")
         print(f"An error occurred in main: {e}")
         tele_bot1.send_telegram(f"An error occurred in main: {e}")
         #check if maintenance mode is activated then just sleep
