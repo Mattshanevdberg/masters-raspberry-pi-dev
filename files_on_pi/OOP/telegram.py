@@ -1,7 +1,7 @@
 import telepot
 import sys
 import time
-from owntime import Timer
+#from owntime import Timer
 
 ### TELEGRAM ###
 TELE_TOKEN = 'token'
@@ -11,7 +11,7 @@ class TelegramBot:
     def __init__(self, device_name):
         self.bot = telepot.Bot(TELE_TOKEN)
         self.device_name = device_name
-        self.timer = Timer()
+        #self.timer = Timer()
     
     def print_error_to_file(self, e, function_name):
         #TESTED: 06-10-2023
@@ -44,7 +44,7 @@ class TelegramBot:
         
         except Exception as e:  
             e = str(e)
-            self.timer.sleep(120)    
+            time.sleep(120)    
             function_name = 'Telegram.get_text_after_last_colon'
             self.telegram_bot.send_telegram(function_name + e)
             return mode
@@ -71,7 +71,7 @@ class TelegramBot:
         except Exception as e:
             # print error to file
             e = str(e)
-            self.timer.sleep(120)
+            time.sleep(120)
             function_name = 'receive_telegram'
             self.print_error_to_file(e, function_name)
             return mode
@@ -86,7 +86,7 @@ class TelegramBot:
         except Exception as e:
             # print error to file
             e = str(e)
-            self.timer.sleep(120)
+            time.sleep(120)
             function_name = 'send_telegram'
             self.print_error_to_file(e, function_name)
             return False            
