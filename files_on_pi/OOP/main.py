@@ -45,6 +45,7 @@ def main():
         set_get_new_refresh_token = False
 
         # Set the system time to the time found on the web
+        access_token_timer.sleep(60)
         access_token_timer.set_system_clock_from_web()
 
         # send start up message (User_name)
