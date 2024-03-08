@@ -8,8 +8,9 @@ class Timer:
     def __init__(self, user_name):
         self.start_time = None
         self.elapsed_time = None
-        self.telegram_bot = TelegramBot(self.user_name)
         self.user_name = user_name
+        self.telegram_bot = TelegramBot(self.user_name)
+        
 
     def set_system_clock_from_web(self):
         '''Sets the system clock for the raspberry pi to the current date and time in GMT+2'''
