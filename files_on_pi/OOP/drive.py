@@ -42,7 +42,7 @@ class DriveAuth:
         self.device_code = None 
         self.access_token = None 
         self.not_expired = True
-        self.refresh_token_timer = Timer()
+        self.refresh_token_timer = Timer(self.user_name)
         self.telegram_bot = TelegramBot(self.user_name)
         self.tokens = None # this is potentially to be used later in the uploading of images
 

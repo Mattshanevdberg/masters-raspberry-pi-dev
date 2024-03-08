@@ -18,7 +18,7 @@ class Camera:
         self.not_configured = True
 #        self.source_folder_path = source_folder_path       REMOVED
         self.output_folder = None
-        self.timer = Timer()
+        self.timer = Timer(self.user_name)
         self.camera = picamera2.Picamera2()
         self.tele_bot_cam = TelegramBot(self.user_name)
         self.img_per_sec = 1
