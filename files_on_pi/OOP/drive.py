@@ -287,7 +287,7 @@ class DriveUpload:
         self.access_token_timer = access_token_timer
         self.parent_folder_id = None
         self.telegram_bot = TelegramBot(self.user_name)
-        self.upload_timer = Timer()        
+        self.upload_timer = Timer(self.user_name)        
     
     def collect_folder_paths_to_upload(self):
         '''create a list containing strings of the paths to the folders 
