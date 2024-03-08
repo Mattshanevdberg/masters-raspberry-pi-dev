@@ -9,7 +9,7 @@ class Maintenance:
     def __init__(self, device_name):
 
         self.device_name = device_name
-        self.timer = Timer()
+        self.timer = Timer(self.device_name)
         self.tele_bot_cam = TelegramBot(self.device_name)
     
     def get_ip_address(self):
