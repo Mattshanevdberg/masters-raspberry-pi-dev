@@ -98,7 +98,7 @@ This is an optional step. But at this stage you might find you are tired of swit
    - On your PC (which should be on the same network as your Raspberry Pi), open a terminal or command prompt.
    - To connect via SSH, use the following command, replacing pi with your user_name (if you haven't changed it, it will be 'pi') and  your_pi_ip with the IP address you noted down earlier: `ssh pi@your_pi_ip`
    - You might be prompted with a message about the authenticity of the host; type "yes" to continue.
-   - Enter the default password when prompted (the default password is 'raspberry' unless you've changed it) OR enter your pi password if you have set one (note that when entering your password, it )
+   - Enter the default password when prompted (the default password is 'raspberry' unless you've changed it) OR enter your pi password if you have set one (note that when entering your password, it will not show up on the screen)
 
 
 ### 7. Installing the necessary packages on the Pi ###
@@ -123,5 +123,58 @@ https://www.instructables.com/Set-up-Telegram-Bot-on-Raspberry-Pi/
    1. Search for a user called 'BotFather'
    2. text him '\newbot' and answer the questions. You can name the bot whatever you please, perhaps 'Pi_camera' or something fun... (I called mine 'Penguin_pi' because I was using the device to remotely monitor penguins)
    3. At the end of the process, you will be given a token, something like: 123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ. Save this, it is the token that your Pi will use when sending messages.
-3. Now you must test your 
+3. Now you must test your Bot:
+   1. Open the terminal on you Pi and enter the python interpreter with the following command: `python3`
+   2. Enter the following commands:
+      - `import telepot`
+      - `bot = telepot.Bot('*copy your bot token from earlier*')`
+      - `bot.getMe()`
+   3. If this returns your bot account info, then it is working as expected
+   4. You must now go on telegram on your smart phone and send the bot a message
+   5. Now you will need to get the send address of you mobile device chat to send messages from your raspberry pi (this is a global variable that will need to be put into the code on your pi). Do so by entering the following commands:
+     - `bot.getUpdates(limit=1, offset=-1)`
+     - This retrieves the infomation of the last message sent to the bot
+     - In the returned dictionary, you will see the following entries under 'chat' : { 'id' : 123456789 , …
+     - copy that id and save it. That is your send address and will be input into the script as a global variable
+
+### 9. Creating a API token to allow the device to upload automatically to a folder in you drive ###
+This step is where you might run into the most problems due to various permission issues and firewalls. If you are using a company account, or an account that is linked to some institution where you are not in control of the permissions and firewalls, and you run into any issues, my first suggestions is to create a new person google account and attempt using that. Alternatively, talk to your IT department. 
+
+The following documentation on Google API's will come in handy if you run into any troubles or you want further understanding (Specifically look under the heading 'Access to Google APIs: for TV & Device Apps' as this is the type of access that was used):
+
+https://developers.google.com/identity/protocols/oauth2
+
+We use the google-api-python-client to access the drive. The github respository for this package can be found here:
+
+https://github.com/googleapis/google-api-python-client 
+
+Now for the simple overview instructions:
+
+1. You must first navigate to the Google Developer Console by following this link: https://console.developers.google.com/
+2. Then you must select create new project (this should be a button in the top right corner)
+3. Give you project a name and leave location as 'No organisation' and create project
+4. select  '+ Enable APIs and services'
+5. This will take you to the API library
+6. Search for Google Drive in the search bar and select Google Drive API
+7. Then select Enable
+8. Now in the navigation panel on the left of the screen you can navigate to the OAuth consent screen
+9. Select the Configure Consent Screen button 
+10. Select the External option and create
+11. Fill in only the required fields on the proceeding page (you can use any name and supply your own email address). Leave the rest blank.
+12. You will then go to the Scopes section. Here you must only select the relevant scopes. For the 'Limited input device' authentification (which is what we will be using) all scopes must be non-sensitive. Select 'Add or remove scopes' and only select the Google Drive API: /auth/drive.file. It must be the .file scope. And you will see it under the non-sensitive scopes section. Save and continue.
+13. For the test users, you must add the email address associated with the drives that you wish to access. Save and continue.
+14. Select back to dashboard
+15. Now in the navigation panel on the left of the screen you can navigate to the Credentials tab
+16. Click create credentials and the OAuth client ID (these will be used to access your drive)
+17. In the Application type drop down, select 'TVs and Limited Input devices' and Name the device whatever you see fit. (we use the TVs and Limited Input devices so you can use another device to verify your account, such as a cellphone or laptop. The Pi sometimes times out when trying to verification and can be very frustrating…
+18. You will have a pop up with your client ID and client secret. You must save these as these are gobal variable that will need to be input into your code. You can view the ID and secret again by selecting the specified credential at a later stage
+
+### 10. Set up VNC to remote into the device from anywhere ###
+
+### 11. Set up a wifi configuration for the pi to automatically connect to a specific wifi ###
+
+### 12. Copying the scripts to Desktop and inputting/adjusting the Global variables ###
+
+### 13. Set up the Pi to lauch the main.py script on start up ###
+
 
