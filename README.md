@@ -1,9 +1,11 @@
 # Raspberry Pi Based Remote Video Monitoring Device
 The following is a step by step guide to setting up a remote video monitoring device. 
-This github contains the software code that is run on the device
+
+This github contains the software code that is run on the device.
+
 Please see paper: 'OPEN Monitor: An Open Source Wildlife Monitoring Systems for Africa' for further information on application
 
-## Functionality Overview: ##
+## Functionality overview: ##
 - Automatic remote video and image monitoring system
 - Automatic video recording on start up
 - Uploading captured data to a google drive over predetermined time periods over a wifi connection
@@ -29,6 +31,44 @@ The following is a list of telegram commands that can be sent via Telegram for d
 An example image of Telegram communication:
 ![Example_of_Telegram_comms](https://github.com/Mattshanevdberg/masters-raspberry-pi-dev/assets/110899554/e4a38684-bc52-4aa8-92b4-2f09395bbb6e)
 
-## Hardware Requirements ##
-- 
+## Minimum hardware requirements ##
+- Raspberry Pi Zero 2 W
+- Raspberry Pi Camera Module 3 (earlier camera modules will not work with the code provided)
+- Pi5 cam csi cable 200mm
+- MicroSD card
+- Micro USB Power Supply
+- Casing for Raspberry Pi
+
+Suggested additional hardware:
+- Micro USB to USB adapter
+- Micro HDMI to HDMI adapter
+- External keyboard and mouse
+- Additional display monitor and HDMI connector
+
+## Set up instructions ##
+The following is a step by step set up instructions of the camera system.
+
+*Note: these instructions assume you already have the Raspberry Pi OS on your SD card and have access to a display, external mouse and keypad that you can use; as well as some working knowledge of microelectronics and coding. If your SD does not have the OS on it already then please see this video to set that up (only the first four and a half minutes are required, unless you wish to do a headless set up. That is for advanced users though and is not supported in this documentation): 
+https://www.youtube.com/watch?v=yn59qX-Td3E 
+
+### 1. Hardware set up ###
+Please see the following Youtube Video for setting up the camera module with the Raspberry Pi: 
+
+https://www.youtube.com/watch?v=oo0A_yRrIxQ 
+
+*Note: The Pi must not be powered up when connecting the camera to the device. This could cause permanent damage to the camera module.
+
+### 2. Connecting the Pi for the first time ###
+Make sure the display is connected and the Micro USB to USB adapter is connected before powering up the Pi.
+
+*Note: if you are not working with a display, the set up could be tricky but is still possible. Please see the Youtube tutorial under Set up instructions for how to do a headless set up. This will cover SSH into your pi and connecting to wifi sections.
+
+### 3. Changing the Pi user name and password ###
+This step is not strictly neccessary but is probably a good idea.
+
+By default your Raspberry Pi comes with an account 'pi' with the password 'raspberry'. You may want to change these to unique strings. The following article will explain how to do this: 
+
+https://thepihut.com/blogs/raspberry-pi-tutorials/how-to-change-the-default-account-username-and-password
+
+### 4. 
 
