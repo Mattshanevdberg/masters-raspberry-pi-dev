@@ -70,5 +70,45 @@ By default your Raspberry Pi comes with an account 'pi' with the password 'raspb
 
 https://thepihut.com/blogs/raspberry-pi-tutorials/how-to-change-the-default-account-username-and-password
 
-### 4. 
+### 4. Connecting the Pi to the internet ###
+Once you have the Pi on and you can see the UI on your display you can connect to wifi through the wifi icon in the top right hand corner of the display screen. 
+
+### 5. Cloning the Github repository onto the Pi ###
+It is time to get this repository onto the Pi.
+
+Please clone the repository onto the Desktop as this will make the proceeding steps easier. This is done through the terminal.
+
+### 6. Update the Pi configurations for this project ###
+It is possible to update the Pi configurations through the GUI. This is done by opening the command prompt and running the command `sudo raspi-config`. This will open a GUI for adjusting the Pi configurations.
+
+However, for ease of set up I have provided a config.txt file in the reposistory that can be used. 
+
+Copy the text from the config.txt file and run the following command `sudo nano /boot/config.txt`, then replace the text in that file with your copied text and save it. Alternatively you can remove the original config.txt file from the boot directory and replace it with the config.txt file in this repository.
+
+### 7. SSH into your Pi ###
+This is an optional step. But at this stage you might find you are tired of switching between plugging you mouse in, then your keyboard or retyping commands rather than copy and pasting them. To solve this you can access the Pi terminal from your PC (provided the PC and Pi are on the same wifi connection). 
+
+### 7. Installing the necessary packages on the Pi ###
+The Pi OS does not have all the packages we need to run the code in this repository, so we will need to install that
+1. Install python3, pydrive, telepot, google-api-python-client and psutli packages by running the following commands in the terminal:
+   - `sudo apt update`
+   - `sudo apt install python3`
+   - `pip install pydrive`
+   - `pip install telepot`
+   - `pip install google-api-python-client`
+   - `pip install psutil`
+2. Reboot your device by running the following command (for the installed packages and updates to take place):
+   - `sudo reboot`
+   
+### 8. Setting up your Telegram bot for communicating with your Pi remotely ###
+The instructions here are based off of the following tutorial, so please refer to this link if further explanation is required: 
+
+https://www.instructables.com/Set-up-Telegram-Bot-on-Raspberry-Pi/
+
+1. Install Telegram on your mobile smart phonen (done through the relevant app store)
+2. Create a bot account for your Pi to use
+   1. Search for a user called 'BotFather'
+   2. text him '\newbot' and answer the questions. You can name the bot whatever you please, perhaps 'Pi_camera' or something fun... (I called mine 'Penguin_pi' because I was using the device to remotely monitor penguins)
+   3. At the end of the process, you will be given a token, something like: 123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ. Save this, it is the token that your Pi will use when sending messages.
+3. Now you must test your 
 
