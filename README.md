@@ -86,7 +86,27 @@ However, for ease of set up I have provided a config.txt file in the reposistory
 Copy the text from the config.txt file and run the following command `sudo nano /boot/config.txt`, then replace the text in that file with your copied text and save it. Alternatively you can remove the original config.txt file from the boot directory and replace it with the config.txt file in this repository.
 
 ### 7. SSH into your Pi ###
-This is an optional step. But at this stage you might find you are tired of switching between plugging you mouse in, then your keyboard or retyping commands rather than copy and pasting them. To solve this you can access the Pi terminal from your PC (provided the PC and Pi are on the same wifi connection). 
+This is an optional step. But at this stage you might find you are tired of switching between plugging you mouse in, then your keyboard or retyping commands rather than copy and pasting them. To solve this you can access the Pi terminal from your PC (provided the PC and Pi are on the same wifi connection)
+
+1. Determine Raspberry Pi's IP Address:
+   - Run the following command: `hostname -I`
+   - Note down the IP address; you'll need it to connect via SSH.
+2. Enable SSH (if not already):
+If SSH is not enabled on your Raspberry Pi, you'll need to enable it:
+Open a terminal on your Raspberry Pi.
+Enter the following command:
+>>sudo raspi-config
+
+Navigate to Interfacing Options > SSH and select "Yes" to enable SSH.
+Exit the configuration tool.
+Connect via SSH:
+On your computer (which should be on the same network as your Raspberry Pi), open a terminal or command prompt.
+To connect via SSH, use the following command, replacing pi with your user_name (generally this is pi) and  your_pi_ip with the IP address you noted down earlier:
+>>ssh pi@your_pi_ip
+
+You might be prompted with a message about the authenticity of the host; type "yes" to continue.
+Enter the default password when prompted (the default password is usually "raspberry" unless you've changed it) OR enter your pi password if you have set one
+
 
 ### 7. Installing the necessary packages on the Pi ###
 The Pi OS does not have all the packages we need to run the code in this repository, so we will need to install that
