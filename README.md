@@ -70,6 +70,8 @@ By default your Raspberry Pi comes with an account 'pi' with the password 'raspb
 
 https://thepihut.com/blogs/raspberry-pi-tutorials/how-to-change-the-default-account-username-and-password
 
+To change the password if you have forgetten your password you can use the command: `sudo passwd username`
+
 ### 4. Connecting the Pi to the internet ###
 Once you have the Pi on and you can see the UI on your display you can connect to wifi through the wifi icon in the top right hand corner of the display screen. 
 
