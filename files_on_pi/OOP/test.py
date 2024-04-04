@@ -29,7 +29,7 @@ drive_upload = drive.DriveUpload('matthew', drive_auth, access_token_timer)
 print(drive_upload.check_for_low_memory())
 '''
 import picamera2
-from picamera2.encoders import H264Encoder
+from picamera2.encoders import H264Encoder, JpegEncoder
 from picamera2.outputs import FfmpegOutput
 from pprint import *
 import time
