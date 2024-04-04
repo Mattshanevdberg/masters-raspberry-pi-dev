@@ -1,8 +1,8 @@
 
 import picamera2
 import os
-from picamera2.encoders import H264Encoder, Quality
-from picamera2.outputs import FfmpegOutput
+from picamera2.encoders import JpegEncoder #H264Encoder, Quality
+from picamera2.outputs import FileOutput
 #own functions
 from owntime import Timer
 from telegram import TelegramBot
@@ -24,7 +24,7 @@ class Camera:
         self.img_per_sec = 1
         self.img_burst_length = 60
         self.vid_length_of_vid = 60
-        self.vid_frame_rate = 25
+        self.vid_frame_rate = 12
 
     def create_folder(self, path):
         '''Create folder at the path with folder name
@@ -113,14 +113,18 @@ class Camera:
 
             #take video of set length of time
             #self.camera.start_and_record_video(f'{self.user_name}_video_{current_time}.mp4', quality='Quality.VERY_HIGH', duration=VID_SEC_LENGTH_OF_VIDEO)
-            vid_path = os.path.join(desktop_path, (f'{self.user_name}_video_{current_time}.mp4'))
-            video_config = self.camera.create_video_configuration(controls={"FrameRate": self.vid_frame_rate})
+            vid_path = os.path.join(desktop_path, (f'{self.user_name}_video_{current_time}.mjpeg'))
+            video_config = self.camera.create_video_configuration(main={"size": (3200, 1800), "format": "RGB888"}, buffer_count=2, controls={"FrameRate": self.vid_frame_rate})
             self.camera.configure(video_config)
-            encoder = H264Encoder()
-            output = FfmpegOutput(vid_path)
-            self.camera.start_recording(encoder, output, Quality.VERY_HIGH)
+            #encoder = H264Encoder()
+            encoder = JpegEncoder(q=80)
+            #output = FfmpegOutput(vid_path)
+            self.camera.start()
+            encoder.output = FileOutput(vid_path)
+            #self.camera.start_recording(encoder, output, Quality.VERY_HIGH)
+            self.camera.start_encoder(encoder)
             self.timer.sleep(self.vid_length_of_vid)
-            self.camera.stop_recording()
+            self.camera.stop_encoder()
 
         except Exception as e:  
             function_name = 'Camera.capture_video:'
