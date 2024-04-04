@@ -44,7 +44,8 @@ pprint(cam.sensor_modes)
 #video_config = cam.create_video_configuration(main={"size": (4608, 2592), "format": "RGB888"}, buffer_count=2, controls={"FrameRate": 12})
 #video_config = cam.create_video_configuration(main={"size": (1280, 720), "format": "RGB888"}, buffer_count=2, controls={"FrameRate": 12})
 #video_config = cam.create_video_configuration(main={"size": (3840, 2160), "format": "RGB888"}, buffer_count=2, controls={"FrameRate": 12})
-video_config = cam.create_video_configuration(main={"size": (2560, 1440), "format": "RGB888"}, buffer_count=2, controls={"FrameRate": 12})
+#video_config = cam.create_video_configuration(main={"size": (2560, 1440), "format": "RGB888"}, buffer_count=2, controls={"FrameRate": 12})
+video_config = cam.create_video_configuration(main={"size": (3200, 1800), "format": "RGB888"}, buffer_count=2, controls={"FrameRate": 12})
 
 cam.configure(video_config)
 
