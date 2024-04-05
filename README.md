@@ -172,8 +172,41 @@ Now for the simple overview instructions:
 18. You will have a pop up with your client ID and client secret. You must save these as these are gobal variable that will need to be input into your code. You can view the ID and secret again by selecting the specified credential at a later stage
 
 ### 10. Set up VNC to remote into the device from anywhere ###
+It is a good idea to have VNC viewer installed on your PC and VNC server installed on your pi. This will allow you to access the GUI of the pi, even when not on the same wifi connection. The following steps are for setting up VNC on your PC and on the pi. Note that the instructions for the PC are for a Linux operating system: 
+
+1. install RealVNC Viewer on your laptop: https://linuxconfig.org/how-to-install-realvnc-viewer-on-linux
+2. Install RealVNC Server on the Pi, check out the first few steps here:
+
+https://help.realvnc.com/hc/en-us/articles/360002249917-VNC-Connect-and-Raspberry-Pi#setting-up-your-raspberry-pi-0-0
+
+3. Then scroll down in that same article to the 'Establishing a cloud connection' section and follow those instructions. You should end up with email credentials and a password that you can use to connect to your device.
 
 ### 11. Set up a wifi configuration for the pi to automatically connect to a specific wifi ###
+You may want to deploy your pi somewhere where there is a wifi connection but you do not have a monitor available to select the correct wifi connection. In this case you would like to set up the pi to connect to a specific wifi connection automatically. You can also set up multiple network connections and create a priority connection list (i.e. try connect to wifi1 first and if that's not available, then try connect to wifi2).
+
+The instructions presented here are from the following post (scroll down to 'Set up your Wi-Fi on Raspberry Pi OS Lite' and navigate to the subheading 'Raspberry Pi OS Bullseye and previous versions'): 
+
+https://raspberrytips.com/raspberry-pi-wifi-setup/ 
+
+further information on the wpa_supplicant.conf
+
+https://w1.fi/cgit/hostap/plain/wpa_supplicant/wpa_supplicant.conf 
+
+We will be either creating or adjusting the wpa_supplicant.conf file. This contains info about the network connections.
+
+1. navigate to the wpa_supplicant.conf file `sudo nano /etc/wpa_supplicant/wpa_supplicant.conf`
+2. By default the file will be almost empty (unless you have already connected to a wifi connection, then you will see the information for that connection in this file)
+3. If there is not already a line in the file stating `country=some_country` then you must add a line stating `country=US`. I do not live in the US but that is what is added automatically when you connect to a wifi connection through the UI and it has worked for me. You can change this to your country if US does not work.
+4. Then you will need to add the network you want to connect to automatically by adding the following code:
+
+`network={
+ ssid="YOURSSID"
+ psk="YOURPASSWORD"
+}`
+
+5. If you would like to add a priority as mentioned above, you can the following line within the network {}: `priority=some_number` where the higher the number, the higher the priority (and the highest priority will connect first).
+
+Note: When connecting to a phone hotspot the phone hotspot it must be set to 2.4Ghz and not 5G and the Security set to WPA2-Personal or give no password for the hotspot.
 
 ### 12. Copying the scripts to Desktop and inputting/adjusting the Global variables ###
 
