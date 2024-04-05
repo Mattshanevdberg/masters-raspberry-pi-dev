@@ -200,8 +200,11 @@ We will be either creating or adjusting the wpa_supplicant.conf file. This conta
 4. Then you will need to add the network you want to connect to automatically by adding the following code:
 
 `network={
+
  ssid="YOURSSID"
+ 
  psk="YOURPASSWORD"
+ 
 }`
 
 5. If you would like to add a priority as mentioned above, you can the following line within the network {}: `priority=some_number` where the higher the number, the higher the priority (and the highest priority will connect first).
