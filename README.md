@@ -201,11 +201,8 @@ We will be either creating or adjusting the wpa_supplicant.conf file. This conta
 
 ```
 network={
-
  ssid="YOURSSID"
- 
  psk="YOURPASSWORD"
- 
 }
 ```
 
@@ -214,7 +211,39 @@ network={
 Note: When connecting to a phone hotspot the phone hotspot it must be set to 2.4Ghz and not 5G and the Security set to WPA2-Personal or give no password for the hotspot.
 
 ### 12. Copying the scripts to Desktop and inputting/adjusting the Global variables ###
+I have designed the system so that everything is run from and saved to the desktop. For this to work you must first copy all the scripts from the repository that you cloned to the desktop in step 5 (these are the .py files inside the Desktop/masters-raspberry-pi-dev/files_on_pi/OOP directory) onto the desktop. 
+
+Next you will need to update the global variables within these files to align with your own credentials.  
+Update the Global variables in the main.py, drive.py and telegram.py (use `sudo nano script_name.py` )
+1. main.py
+   - USER_NAME = 'your-pi-user-name'
+   - You can also change the sleep and upload times in this file
+2. drive.py
+   - CLIENT_ID = 'your-client-id'
+   - CLIENT_SECRET = 'your-client-secret'
+   - Client id and secret were found in the step 9
+   - DESTINATION_FOLDER_ID = 'the-last-bit-of-the-url-for-the-drive-folder-you-want-to-upload-to'
+   - destination folder id is the id of the folder in your google drive that you want to save the files to. To find the id of the your destination folder, first navigate to the desired folder in you google drive, then copy the part of the url after the last /. So if your url is: "https://drive.google.com/drive/u/1/folders/1TcHJojfyXrKM75Rjsns8US773gcALbt5j", then your folder id is: "1TcHJojfyXrKM75Rjsns8US773gcALbt5j"
+3. telegram.py
+   - TELE_TOKEN = 'your bot token'
+   - TELE_SEND_ADDRESS = 'your send address'
+   - For telegram token and send address see step 8
+
+Now the scripts have you credentials and are ready to be run. I would advise testing them at this point by using `sudo -E python3 main.py` from the desktop in the terminal. The sudo -E part of the command is because you need to have sudo priviledges in order to change or update system clock (which the script does on start up).
 
 ### 13. Set up the Pi to lauch the main.py script on start up ###
+Once you have tested the script runs smoothly, you now need to set the pi up so that the script is run automatically when the pi starts up. To do this we use the @reboot command in the crontab (the crontab is a Linux command that allows you to schedule tasks to run at specific times):
+
+1. in your terminal run the command `crontab -e` this opens the crontab for editting
+2. scroll to the bottom and add the following two lines:
+  - `@reboot v4l2-ctl --set-ctrl wide_dynamic_range=1 -d /dev/v4l-subdev0`
+  - `@reboot sudo -E python3 /home/your_pi_username/Desktop/main.py`
+
+*@reboot runs the proceeding command on start up
+*The first command is to enable the HDR setting for the camera. This helps with contrast and making the picture quality better. Its not strictly necessary.
+*The second command runs the python script that you are pointing to. The part after python3 is just the path to your python script you want to run on startup (in this case it will be the main.py)
+*sudo runs the script with admin privileges. This is required in order to set the system clock to the current time. The -E preserves the current environment that the script is running in (so you don't need to install modules/dependencies globally in order to access them when running as an admin). 
+
+Lekka! You are good to go! Good luck and happy recording!
 
 
