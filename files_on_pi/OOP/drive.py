@@ -410,9 +410,9 @@ class DriveUpload:
                 'name': file_name,
                 'parents': [self.parent_folder_id]
                 }
-            media = MediaFileUpload(file_path)#,
-                                    #mimetype='image/jpeg')
-            # pylint: disable=maybe-no-member
+            media = MediaFileUpload(file_path,
+                                    mimetype='video/x-motion-jpeg', chunksize=2*1024*1024, resumable=True)
+            # pylint: disable=maybe-no-membe*r
             file = service.files().create(body=file_metadata, media_body=media,
                                         fields='id').execute()
             #print(F'File ID: {file.get("id")}')
