@@ -79,3 +79,6 @@ for frame_rate in range(50, 200, 10):
 
     #end recorder
     cam.stop_encoder()
+
+    #stop the camera so that you can reconfigure it with a different resolution
+    cam.stop()

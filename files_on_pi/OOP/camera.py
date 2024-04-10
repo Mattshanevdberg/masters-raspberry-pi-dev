@@ -125,6 +125,8 @@ class Camera:
             self.camera.start_encoder(encoder)
             self.timer.sleep(self.vid_length_of_vid)
             self.camera.stop_encoder()
+            # stopping camera so can reconfigure if resolution changes
+            self.camera.stop()
 
         except Exception as e:  
             function_name = 'Camera.capture_video:'
