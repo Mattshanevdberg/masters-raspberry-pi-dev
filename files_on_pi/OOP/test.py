@@ -33,7 +33,10 @@ from picamera2.encoders import H264Encoder, JpegEncoder
 from picamera2.outputs import FfmpegOutput
 from pprint import *
 import time
-from picamera2.outputs import FileOutput 
+from picamera2.outputs import FileOutput
+
+import cv2 
+import glob
 
 
 #initiate camera
@@ -82,3 +85,38 @@ for frame_rate in range(50, 200, 10):
 
     #stop the camera so that you can reconfigure it with a different resolution
     cam.stop()
+
+# Now we need to check that the correct resolution and fps were captured
+
+def get_video_properties(video_path):
+    cap = cv2.VideoCapture(video_path)
+    
+    if not cap.isOpened():
+        print(f"Error: Could not open video {video_path}.")
+        return None
+    
+    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    duration = frame_count / fps if fps else 0
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    
+    cap.release()
+    
+    resolution = (width, height)
+    return frame_count, fps, duration, resolution
+
+def process_videos_with_extension(extension):
+    # Use glob to find all files with the specified extension in the current directory
+    for video_path in glob.glob(f'*.{extension}'):
+        properties = get_video_properties(video_path)
+        if properties:
+            frame_count, fps, duration, resolution = properties
+            print(f"Video Path: {video_path}")
+            print(f"Total number of frames: {frame_count}")
+            print(f"Frames per second (FPS): {fps}")
+            print(f"Duration (in seconds): {duration}")
+            print(f"Resolution: {resolution[0]}x{resolution[1]}\n")
+
+# Example usage - process all .mjpeg files in the current directory
+process_videos_with_extension('mjpeg')
