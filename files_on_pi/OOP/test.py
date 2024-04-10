@@ -35,33 +35,47 @@ from pprint import *
 import time
 from picamera2.outputs import FileOutput 
 
+
 #initiate camera
 cam = picamera2.Picamera2()
 
-#check the available sensors and resolutions
-pprint(cam.sensor_modes)
+#check the available sensors and resolutions, this is only if you need to do not know what resolutions are available
+#pprint(cam.sensor_modes)
 
-#video_config = cam.create_video_configuration(main={"size": (4608, 2592), "format": "RGB888"}, buffer_count=2, controls={"FrameRate": 12})
-#video_config = cam.create_video_configuration(main={"size": (1280, 720), "format": "RGB888"}, buffer_count=2, controls={"FrameRate": 12})
-#video_config = cam.create_video_configuration(main={"size": (3840, 2160), "format": "RGB888"}, buffer_count=2, controls={"FrameRate": 12})
-#video_config = cam.create_video_configuration(main={"size": (2560, 1440), "format": "RGB888"}, buffer_count=2, controls={"FrameRate": 12})
-video_config = cam.create_video_configuration(main={"size": (3200, 1800), "format": "RGB888"}, buffer_count=2, controls={"FrameRate": 12})
+# input resolution to test
+# resolution 1
+resolution1 = (1280,720) #720p HD quality
+resolution2 = (2560, 1440) # 2 x res1
+resolution3 = (3200, 1800) # 2.5 x res1
+resolution4 = (3840, 2160) # 3 x res1
+resolution5 = (4608, 2592) # theoretical max resolution
 
-cam.configure(video_config)
+resoltion = resolution1
 
-#encoder = H264Encoder()
-encoder = JpegEncoder(q=80)
+print(f'current resolution is: {resoltion}')
 
-#output = FfmpegOutput('test.mp4')
+# for a specific resolution, up the frame rate iteratively taking 10sec videos
+for frame_rate in range(50, 200, 10):
 
-cam.start() # potentially check that the camera started (a trouble shooting option)
+    # print the frame rate 
+    print(f'current frame rate is attempting is: {frame_rate}')
 
-#encoder.output = FileOutput('test.mp4')
+    # configure camera
+    video_config = cam.create_video_configuration(main={"size": resolution1, "format": "RGB888"}, buffer_count=2, controls={"FrameRate": frame_rate})
+    cam.configure(video_config)
 
-encoder.output = FileOutput(f"{int(time.time())}.mjpeg")
+    # set the encoder and start camera
+    encoder = JpegEncoder(q=80)
+    cam.start() 
 
-cam.start_encoder(encoder)
+    #set the output file name
+    encoder.output = FileOutput(f"{resoltion}_{frame_rate}.mjpeg")
 
-time.sleep(2)
+    #start recording
+    cam.start_encoder(encoder)
 
-cam.stop_encoder()
+    # record a 10 second video
+    time.sleep(10)
+
+    #end recorder
+    cam.stop_encoder()
