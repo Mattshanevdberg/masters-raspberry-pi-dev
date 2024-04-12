@@ -45,6 +45,8 @@ cam = picamera2.Picamera2()
 #check the available sensors and resolutions, this is only if you need to do not know what resolutions are available
 #pprint(cam.sensor_modes)
 def test_resolution_and_frame_rate():
+
+    #cam = picamera2.Picamera2()
     # input resolution to test
     # resolution 1
     resolution1 = (1280,720) #720p HD quality
@@ -97,7 +99,7 @@ def capture_mjpeg_v4I2():
 
     encoder = MJPEGEncoder(10000000)
 
-    name = f'"{resolution1}_{frame_rate}.mjpeg"'
+    name = f'{resolution1}_{frame_rate}.mjpeg'
     cam.start_recording(encoder, name)
     time.sleep(10)
     cam.stop_recording()
@@ -111,7 +113,7 @@ def capture_mjpeg_v4I2():
 
     encoder = MJPEGEncoder(10000000)
 
-    name = f'"{resolution1}_{frame_rate}.mjpeg"'
+    name = f'{resolution1}_{frame_rate}.mjpeg'
     cam.start_recording(encoder, name)
     time.sleep(10)
     cam.stop_recording()
@@ -125,12 +127,12 @@ def capture_mjpeg_v4I2():
 
     encoder = MJPEGEncoder(10000000)
 
-    name = f'"{resolution1}_{frame_rate}.mjpeg"'
+    name = f'{resolution1}_{frame_rate}.mjpeg'
     cam.start_recording(encoder, name)
     time.sleep(10)
     cam.stop_recording()
     cam.stop()
-
+#cam = picamera2.Picamera2()
     # forth resolution and frame rate
     resolution2 = (2560, 1440) # 2 x res1
     frame_rate = 15
@@ -139,12 +141,121 @@ def capture_mjpeg_v4I2():
 
     encoder = MJPEGEncoder(10000000)
 
-    name = f'"{resolution1}_{frame_rate}.mjpeg"'
+    name = f'{resolution2}_{frame_rate}.mjpeg'
     cam.start_recording(encoder, name)
     time.sleep(10)
     cam.stop_recording()
     cam.stop()
 
+def mp4_with_res_adjust():
+
+    # first resolution and frame rate
+    resolution1 = (1280,720) #720p HD quality
+    frame_rate = 15
+    video_config = cam.create_video_configuration(main={"size": resolution1, "format": "RGB888"}, buffer_count=2, controls={"FrameRate": frame_rate})
+    cam.configure(video_config)
+
+    # Initialize the encoder with a bitrate, adjust as needed
+    encoder = H264Encoder(10000000)  # Example bitrate
+
+    # Specify the output file name and format
+    name = f'{resolution1}_{frame_rate}.mp4'
+    output = FfmpegOutput(name)
+    # Start recording
+    cam.start_recording(encoder, output)
+    time.sleep(10)
+    cam.stop_recording()
+    cam.stop()
+
+    # first resolution and frame rate
+    resolution1 = (1280,720) #720p HD quality
+    frame_rate = 50
+    video_config = cam.create_video_configuration(main={"size": resolution1, "format": "RGB888"}, buffer_count=2, controls={"FrameRate": frame_rate})
+    cam.configure(video_config)
+
+    # Initialize the encoder with a bitrate, adjust as needed
+    encoder = H264Encoder(10000000)  # Example bitrate
+
+    # Specify the output file name and format
+    name = f'{resolution1}_{frame_rate}.mp4'
+    output = FfmpegOutput(name)
+    # Start recording
+    cam.start_recording(encoder, output)
+    time.sleep(10)
+    cam.stop_recording()
+    cam.stop()
+
+    # first resolution and frame rate
+    resolution1 = (1280,720) #720p HD quality
+    frame_rate = 100
+    video_config = cam.create_video_configuration(main={"size": resolution1, "format": "RGB888"}, buffer_count=2, controls={"FrameRate": frame_rate})
+    cam.configure(video_config)
+
+    # Initialize the encoder with a bitrate, adjust as needed
+    encoder = H264Encoder(10000000)  # Example bitrate
+
+    # Specify the output file name and format
+    name = f'{resolution1}_{frame_rate}.mp4'
+    output = FfmpegOutput(name)
+    # Start recording
+    cam.start_recording(encoder, output)
+    time.sleep(10)
+    cam.stop_recording()
+    cam.stop()
+
+    # first resolution and frame rate
+    resolution1 = (2560, 1440) #720p HD quality
+    frame_rate = 15
+    video_config = cam.create_video_configuration(main={"size": resolution1, "format": "RGB888"}, buffer_count=2, controls={"FrameRate": frame_rate})
+    cam.configure(video_config)
+
+    # Initialize the encoder with a bitrate, adjust as needed
+    encoder = H264Encoder(10000000)  # Example bitrate
+
+    # Specify the output file name and format
+    name = f'{resolution1}_{frame_rate}.mp4'
+    output = FfmpegOutput(name)
+    # Start recording
+    cam.start_recording(encoder, output)
+    time.sleep(10)
+    cam.stop_recording()
+    cam.stop()
+
+    # first resolution and frame rate
+    resolution1 = (3200, 1800) #720p HD quality
+    frame_rate = 15
+    video_config = cam.create_video_configuration(main={"size": resolution1, "format": "RGB888"}, buffer_count=2, controls={"FrameRate": frame_rate})
+    cam.configure(video_config)
+
+    # Initialize the encoder with a bitrate, adjust as needed
+    encoder = H264Encoder(10000000)  # Example bitrate
+
+    # Specify the output file name and format
+    name = f'{resolution1}_{frame_rate}.mp4'
+    output = FfmpegOutput(name)
+    # Start recording
+    cam.start_recording(encoder, output)
+    time.sleep(10)
+    cam.stop_recording()
+    cam.stop()
+
+    # first resolution and frame rate
+    resolution1 = (3200, 1800) #720p HD quality
+    frame_rate = 22
+    video_config = cam.create_video_configuration(main={"size": resolution1, "format": "RGB888"}, buffer_count=2, controls={"FrameRate": frame_rate})
+    cam.configure(video_config)
+
+    # Initialize the encoder with a bitrate, adjust as needed
+    encoder = H264Encoder(10000000)  # Example bitrate
+
+    # Specify the output file name and format
+    name = f'{resolution1}_{frame_rate}.mp4'
+    output = FfmpegOutput(name)
+    # Start recording
+    cam.start_recording(encoder, output)
+    time.sleep(10)
+    cam.stop_recording()
+    cam.stop()
 
 
 '''
@@ -188,5 +299,4 @@ def process_videos_with_extension(path_to_directory, extension):
 
 # Example usage - process all .mjpeg files in the current directory
 process_videos_with_extension('/home/matthew/Desktop/Desktop','mjpeg')
-
 '''
