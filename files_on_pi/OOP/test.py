@@ -56,7 +56,7 @@ def mjpeg_encoder(resolution, frame_rate):
     frame_dur2 = (frame_duration, frame_duration)
     print(frame_dur2)
 
-    video_config = cam.create_video_configuration(main={"size": resolution, "format": "RGB888"}, buffer_count=2, controls={"FrameRate": frame_rate})
+    video_config = cam.create_video_configuration(main={"size": resolution, "format": "RGB888"}, buffer_count=2, controls={"FrameDurationLimits": frame_dur2})
 
     cam.configure(video_config)
     
@@ -66,14 +66,14 @@ def mjpeg_encoder(resolution, frame_rate):
     a, b, c = cam.camera_controls["FrameDurationLimits"]
     print(a, b, c)
 
-    frame_duration = math.ceil(1000000/frame_rate)
-    print(frame_duration)
-    frame_dur2 = (frame_duration, frame_duration)
-    print(frame_dur2)
-    cam.video_configuration.controls.FrameDurationLimits = frame_dur2
+    #frame_duration = math.ceil(1000000/frame_rate)
+    #print(frame_duration)
+    #frame_dur2 = (frame_duration, frame_duration)
+    #print(frame_dur2)
+    #cam.video_configuration.controls.FrameDurationLimits = frame_dur2
 
 
-    time_stamp = time.strftime("%y_%m_%d_%H_%M")
+    time_stamp = time.strftime("%y_%m_%d_%H_%M_%S")
     output_name = f'{time_stamp}_test.mp4'
 
     encoder = H264Encoder()
