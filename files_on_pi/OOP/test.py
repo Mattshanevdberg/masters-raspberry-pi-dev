@@ -50,13 +50,27 @@ pprint(cam.sensor_modes)
 def mjpeg_encoder(resolution, frame_rate):
     print(f'current resolution is: {resolution}')
     print(f'current frame rate is attempting is: {frame_rate}')
-    video_config = cam.create_video_configuration(main={"size": resolution, "format": "RGB888"}, buffer_count=2)#, controls={"FrameRate": frame_rate})
+
+    frame_duration = math.ceil(1000000/frame_rate)
+    print(frame_duration)
+    frame_dur2 = (frame_duration, frame_duration)
+    print(frame_dur2)
+
+    video_config = cam.create_video_configuration(main={"size": resolution, "format": "RGB888"}, buffer_count=2, controls={"FrameRate": frame_rate})
 
     cam.configure(video_config)
     
     pprint(cam.video_configuration)
+    
+    # the frame durations are between: 8324, 77249844
+    a, b, c = cam.camera_controls["FrameDurationLimits"]
+    print(a, b, c)
 
-    pprint(cam.controls["FrameDurationLimits"])
+    frame_duration = math.ceil(1000000/frame_rate)
+    print(frame_duration)
+    frame_dur2 = (frame_duration, frame_duration)
+    print(frame_dur2)
+    cam.video_configuration.controls.FrameDurationLimits = frame_dur2
 
 
     time_stamp = time.strftime("%y_%m_%d_%H_%M")
@@ -76,11 +90,11 @@ resolution1 = (1280, 720) #720p HD quality
 frame_rate1 = 15.0
 mjpeg_encoder(resolution1, frame_rate1)
 
-resolution1 = (1280, 720) #720p HD quality
+resolution1 = (1280, 1440) #720p HD quality
 frame_rate2 = 50.0
 mjpeg_encoder(resolution1, frame_rate2)
 
-resolution2 = (3200, 1800) #720p HD quality
+resolution2 = (2560, 1000) #720p HD quality
 frame_rate3 = 12.0
 mjpeg_encoder(resolution2, frame_rate1)
 
