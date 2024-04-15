@@ -50,11 +50,14 @@ pprint(cam.sensor_modes)
 def mjpeg_encoder(resolution, frame_rate):
     print(f'current resolution is: {resolution}')
     print(f'current frame rate is attempting is: {frame_rate}')
-    video_config = cam.create_video_configuration(main={"size": resolution, "format": "RGB888"}, buffer_count=2, controls={"FrameRate": frame_rate})
+    video_config = cam.create_video_configuration(main={"size": resolution, "format": "RGB888"}, buffer_count=2)#, controls={"FrameRate": frame_rate})
 
     cam.configure(video_config)
+    
+    pprint(cam.video_configuration)
 
-    print(cam.video_configuration)
+    pprint(cam.controls["FrameDurationLimits"])
+
 
     time_stamp = time.strftime("%y_%m_%d_%H_%M")
     output_name = f'{time_stamp}_test.mp4'
@@ -429,3 +432,4 @@ def process_videos_with_extension(path_to_directory, extension):
 # Example usage - process all .mjpeg files in the current directory
 process_videos_with_extension('/home/matthew/Desktop/Desktop','mp4')
 '''
+
