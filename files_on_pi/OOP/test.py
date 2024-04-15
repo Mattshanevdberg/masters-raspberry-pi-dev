@@ -56,8 +56,11 @@ def mjpeg_encoder(resolution, frame_rate):
 
     print(cam.video_configuration)
 
+    time_stamp = time.strftime("%y_%m_%d_%H_%M")
+    output_name = f'{time_stamp}_test.mp4'
+
     encoder = H264Encoder()
-    output = FfmpegOutput('test.mp4')
+    output = FfmpegOutput(output_name)
 
     cam.start_recording(encoder, output)
     time.sleep(10)
