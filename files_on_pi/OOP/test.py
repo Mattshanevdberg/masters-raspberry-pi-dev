@@ -37,14 +37,49 @@ from pprint import *
 import time
 from picamera2.outputs import FileOutput
 import os
+import math
 
 
 
 #initiate camera
-#cam = picamera2.Picamera2()
+cam = picamera2.Picamera2()
 
 #check the available sensors and resolutions, this is only if you need to do not know what resolutions are available
-#pprint(cam.sensor_modes)
+pprint(cam.sensor_modes)
+
+def mjpeg_encoder(resolution, frame_rate):
+    print(f'current resolution is: {resolution}')
+    print(f'current frame rate is attempting is: {frame_rate}')
+    video_config = cam.create_video_configuration(main={"size": resolution, "format": "RGB888"}, buffer_count=2, controls={"FrameRate": frame_rate})
+
+    cam.configure(video_config)
+
+    print(cam.video_configuration)
+
+    encoder = H264Encoder()
+    output = FfmpegOutput('test.mp4')
+
+    cam.start_recording(encoder, output)
+    time.sleep(10)
+    cam.stop_recording()
+
+
+
+# first resolution and frame rate
+resolution1 = (1280, 720) #720p HD quality
+frame_rate1 = 15.0
+mjpeg_encoder(resolution1, frame_rate1)
+
+resolution1 = (1280, 720) #720p HD quality
+frame_rate2 = 50.0
+mjpeg_encoder(resolution1, frame_rate2)
+
+resolution2 = (3200, 1800) #720p HD quality
+frame_rate3 = 12.0
+mjpeg_encoder(resolution2, frame_rate1)
+
+
+
 def test_resolution_and_frame_rate():
 
     #cam = picamera2.Picamera2()
@@ -75,7 +110,7 @@ def test_resolution_and_frame_rate():
         cam.start() 
 
         #set the output file name
-        encoder.output = FileOutput(f"{resoltion}_{frame_rate}.mjpeg")
+        encoder.output = FileOutput(f"{resolution}_{frame_rate}.mjpeg")
 
         #start recording
         cam.start_encoder(encoder)
@@ -258,13 +293,66 @@ def mp4_with_res_adjust():
     cam.stop_recording()
     cam.stop()
 
-def config_direct_into_object(resolution, frame_rate):
 
+def config_direct_into_object_new(resolution, frame_rate):
+    #cam = picamera2.Picamera2()
     #set the inputs
     encoder = '.h264'
     extension = '.mp4'
-    h264_output = resolution+frame_rate+encoder
-    mp4_output = resolution+frame_rate+extension
+    hour = int(time.strftime('%H'))
+    now = time.strftime("%y_%m_%d_%H_%M")
+    resolutionstr = str(resolution).replace('(', '-').replace(')', '-').replace(' ', '-')
+    frame_ratestr = str(frame_rate).replace('.', '-')
+    h264_output = resolutionstr+frame_ratestr+now+encoder
+    mp4_output = 'test'+resolutionstr+frame_ratestr+now+extension
+    frame_duration = math.ceil(1000000/frame_rate)
+    print(frame_duration)
+    frame_dur2 = (frame_duration, frame_duration)
+    print(frame_dur2)
+    cam.video_configuration.controls.FrameDurationLimits = frame_dur2
+    cam.video_configuration.size = resolution
+    print(cam.video_configuration.controls)
+    print(cam.video_configuration)
+
+    # Initialize the encoder with a bitrate, adjust as needed
+    encoder = H264Encoder(bitrate=17000000)  # Example bitrate
+
+    # Start recording
+    cam.start_recording(encoder, h264_output)
+    print('camera started recording')
+    time.sleep(10)
+    print('sleep done')
+    cam.stop_recording()
+    print('recording done')
+    cam.stop()
+    print('camera stopped')
+
+    #convert h264 to mp4, and delete h264 file
+    strframe_rate = str(frame_rate)
+    os.system("ffmpeg -r "+strframe_rate+" -i "+h264_output+" -c copy "+mp4_output)
+    #os.remove(h264_output)
+
+# first resolution and frame rate
+#resolution1 = (1280, 720) #720p HD quality
+#frame_rate1 = 15.0
+#config_direct_into_object(resolution1, frame_rate1)
+#cam = picamera2.Picamera2()
+#resolution1 = (1280, 720) #720p HD quality
+#frame_rate2 = 50.0
+#config_direct_into_object(resolution1, frame_rate2)
+
+#resolution2 = (3200, 1800) #720p HD quality
+#frame_rate3 = 12.0
+#config_direct_into_object(resolution2, frame_rate3)
+
+def config_direct_into_object(resolution, frame_rate):
+    #set the inputs
+    encoder = '.h264'
+    extension = '.mp4'
+    resolutionstr = str(resolution).replace('(', '-').replace(')', '-')
+    frame_ratestr = str(frame_rate)
+    h264_output = resolutionstr+frame_ratestr+encoder
+    mp4_output = resolutionstr+frame_ratestr+extension
     cam.video_configuration.controls.FrameRate = frame_rate
     cam.video_configuration.size = resolution
     
@@ -279,24 +367,24 @@ def config_direct_into_object(resolution, frame_rate):
     cam.stop()
 
     #convert h264 to mp4, and delete h264 file
-    os.system("ffmpeg -r "+frame_rate+" -i "+h264_output+" -c copy "+mp4_output)
+    os.system("ffmpeg -r "+frame_ratestr+" -i "+h264_output+" -c copy "+mp4_output)
     os.remove(h264_output)
 
 # first resolution and frame rate
-resolution1 = (1280,720) #720p HD quality
-frame_rate1 = 15
-config_direct_into_object(resolution1, frame_rate1)
+#resolution1 = (1280, 720) #720p HD quality
+#frame_rate1 = 15.0
+#config_direct_into_object(resolution1, frame_rate1)
 
-resolution1 = (1280,720) #720p HD quality
-frame_rate2 = 50
-config_direct_into_object(resolution1, frame_rate2)
+#resolution1 = (1280, 720) #720p HD quality
+#frame_rate2 = 50.0
+#config_direct_into_object(resolution1, frame_rate2)
 
-resolution2 = (3200, 1800) #720p HD quality
-frame_rate3 = 12
-config_direct_into_object(resolution1, frame_rate1)
-
+#resolution2 = (3200, 1800) #720p HD quality
+#frame_rate3 = 12.0
+#config_direct_into_object(resolution1, frame_rate1)
 
 '''
+
 # Now we need to check that the correct resolution and fps were captured
 import cv2 
 import glob
@@ -336,5 +424,5 @@ def process_videos_with_extension(path_to_directory, extension):
             print(f"Resolution: {resolution[0]}x{resolution[1]}\n")
 
 # Example usage - process all .mjpeg files in the current directory
-process_videos_with_extension('/home/matthew/Desktop/Desktop','mjpeg')
+process_videos_with_extension('/home/matthew/Desktop/Desktop','mp4')
 '''
