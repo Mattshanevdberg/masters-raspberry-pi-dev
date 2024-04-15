@@ -36,11 +36,12 @@ from picamera2.outputs import FfmpegOutput
 from pprint import *
 import time
 from picamera2.outputs import FileOutput
+import os
 
 
 
 #initiate camera
-cam = picamera2.Picamera2()
+#cam = picamera2.Picamera2()
 
 #check the available sensors and resolutions, this is only if you need to do not know what resolutions are available
 #pprint(cam.sensor_modes)
@@ -256,6 +257,43 @@ def mp4_with_res_adjust():
     time.sleep(10)
     cam.stop_recording()
     cam.stop()
+
+def config_direct_into_object(resolution, frame_rate):
+
+    #set the inputs
+    encoder = '.h264'
+    extension = '.mp4'
+    h264_output = resolution+frame_rate+encoder
+    mp4_output = resolution+frame_rate+extension
+    cam.video_configuration.controls.FrameRate = frame_rate
+    cam.video_configuration.size = resolution
+    
+
+    # Initialize the encoder with a bitrate, adjust as needed
+    encoder = H264Encoder(bitrate=17000000)  # Example bitrate
+
+    # Start recording
+    cam.start_recording(encoder, h264_output)
+    time.sleep(10)
+    cam.stop_recording()
+    cam.stop()
+
+    #convert h264 to mp4, and delete h264 file
+    os.system("ffmpeg -r "+frame_rate+" -i "+h264_output+" -c copy "+mp4_output)
+    os.remove(h264_output)
+
+# first resolution and frame rate
+resolution1 = (1280,720) #720p HD quality
+frame_rate1 = 15
+config_direct_into_object(resolution1, frame_rate1)
+
+resolution1 = (1280,720) #720p HD quality
+frame_rate2 = 50
+config_direct_into_object(resolution1, frame_rate2)
+
+resolution2 = (3200, 1800) #720p HD quality
+frame_rate3 = 12
+config_direct_into_object(resolution1, frame_rate1)
 
 
 '''
