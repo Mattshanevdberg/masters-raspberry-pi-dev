@@ -29,7 +29,7 @@ drive_upload = drive.DriveUpload('matthew', drive_auth, access_token_timer)
 print(drive_upload.check_for_low_memory())
 '''
 
-
+'''
 import picamera2
 from picamera2.encoders import H264Encoder, JpegEncoder, MJPEGEncoder
 from picamera2.outputs import FfmpegOutput
@@ -410,19 +410,37 @@ import cv2
 import glob
 import os
 
+def get_actual_frame_count(cap):
+    frame_count = 0
+    while True:
+            # Read a frame from the video
+            ret, frame = cap.read()
+            
+            # If frame is read correctly ret is True
+            if not ret:
+                break
+            
+            frame_count += 1
+
+    # Release the video capture object
+    cap.release()
+    
+    return frame_count
+
+
 def get_video_properties(video_path):
     cap = cv2.VideoCapture(video_path)
-    
+
     if not cap.isOpened():
         print(f"Error: Could not open video {video_path}.")
         return None
     
     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    frame_count2 = cap.get(cv2.CAP_PROP_FRAME_COUNT)
     fps = cap.get(cv2.CAP_PROP_FPS)
     duration = frame_count / fps if fps else 0
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    frame_count2 = get_actual_frame_count(cap)
     
     cap.release()
     
@@ -438,12 +456,12 @@ def process_videos_with_extension(path_to_directory, extension):
         if properties:
             frame_count, frame_count2, fps, duration, resolution = properties
             print(f"Video Path: {video_path}")
-            print(f"Total number of frames: {frame_count}, framecount2 {frame_count2}")
+            print(f"Total number of frames from OpenCV: {frame_count}, Actual Frame Count: {frame_count2}")
             print(f"Frames per second (FPS): {fps}")
             print(f"Duration (in seconds): {duration}")
             print(f"Resolution: {resolution[0]}x{resolution[1]}\n")
 
 # Example usage - process all .mjpeg files in the current directory
-process_videos_with_extension('/home/matthew/Desktop/Desktop','mp4')
+process_videos_with_extension('/home/matthew/Desktop','mjpeg')
 '''
-
+'''
