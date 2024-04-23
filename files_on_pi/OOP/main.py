@@ -119,7 +119,7 @@ def main():
                 #TESTED: 06-10-2023 - except teamviewer
                 #changing the frame rate in the capture video function
                 while (mode == 'vid_frame_rate'):
-                    tele_bot1.send_telegram('Please select input a frame rate (frames/sec) using the following format "username:frame_rate"')
+                    tele_bot1.send_telegram('Please select input a frame rate (frames/sec) using the following format "username:frame_rate". Please take note of the following frame rate restrictions at the specified resolutions 1280x720:max fps = 64; 1536x864: max fps = 37; 1920x1080: max fps = 37; 2304x1296: max fps = 17; 2752x1550: max fps = 11; 2992x1800: max fps = 8; 3792x2132: max fps = 3; 4608x2592: max fps = 1. Note that these are guidelines and not definite rules, as you approach these frame rates the actual frame rate captured may vary from the input. Always check to ensure that the frame rate is as desired.')
                     access_token_timer.sleep(60)
                     # receiveing frame rate
                     new_mode = tele_bot1.receive_message(mode)
@@ -143,7 +143,7 @@ def main():
                 #TESTED: 06-10-2023 - except teamviewer
                 #changing the frame rate in the capture video function
                 while (mode == 'img_frame_rate'):
-                    tele_bot1.send_telegram('Please select input a frame rate (frames/sec) using the following format "username:frame_rate"')
+                    tele_bot1.send_telegram('Please input the number of frames to be captured per burst using the following format "username:frame_rate". If this requires the camera to take more than a photo a second, this may not be possible without changing the global parameters in the camera.py file. Please see there if you require higher frame rate capture.')
                     access_token_timer.sleep(60)
                     # receiveing frame rate
                     new_mode = tele_bot1.receive_message(mode)

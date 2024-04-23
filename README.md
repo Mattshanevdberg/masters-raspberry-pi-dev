@@ -227,6 +227,8 @@ Update the Global variables in the main.py, drive.py and telegram.py (use `sudo 
    - TELE_TOKEN = 'your bot token'
    - TELE_SEND_ADDRESS = 'your send address'
    - For telegram token and send address see step 8
+4. camera.py
+   - add in the camera options*
 
 Now the scripts have you credentials and are ready to be run. I would advise testing them at this point by using `sudo -E python3 main.py` from the desktop in the terminal. The sudo -E part of the command is because you need to have sudo priviledges in order to change or update system clock (which the script does on start up).
 
