@@ -251,6 +251,8 @@ class Camera:
                 self.camera.stop_encoder()
                 # stopping camera so can reconfigure if resolution changes
                 self.camera.stop()
+                # sleep for 1 min to give pi some time to cool down
+                self.timer.sleep(60)
 
             # choose the configuration and output type based on desired resoltuion and specified output type
             elif VID_RESOLUTION_INPUT == 9:
@@ -274,6 +276,8 @@ class Camera:
                 self.camera.stop_encoder()
                 # stopping camera so can reconfigure if resolution changes
                 self.camera.stop()
+                # sleep for 1 min to give pi some time to cool down
+                self.timer.sleep(60)
 
             # choose the configuration and output type based on desired resoltuion and specified output type
             elif VID_RESOLUTION_INPUT == 10:
@@ -297,6 +301,8 @@ class Camera:
                 self.camera.stop_encoder()
                 # stopping camera so can reconfigure if resolution changes
                 self.camera.stop()
+                # sleep for 1 min to give pi some time to cool down
+                self.timer.sleep(60)
 
             # choose the configuration and output type based on desired resoltuion and specified output type
             elif VID_RESOLUTION_INPUT == 11:
@@ -320,6 +326,8 @@ class Camera:
                 self.camera.stop_encoder()
                 # stopping camera so can reconfigure if resolution changes
                 self.camera.stop()
+                # sleep for 1 min to give pi some time to cool down
+                self.timer.sleep(60)
 
             else:
                 e = "You did not select a valid resolution input for the video. Please put the device in maintenance mode and select a valid resolution for the video in the global variables in the camera.py file"
