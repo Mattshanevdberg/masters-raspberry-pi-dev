@@ -228,7 +228,13 @@ Update the Global variables in the main.py, drive.py and telegram.py (use `sudo 
    - TELE_SEND_ADDRESS = 'your send address'
    - For telegram token and send address see step 8
 4. camera.py
-   - add in the camera options*
+   - VID_RESOLUTION_INPUT = 'chosen resolution category' #see script for details
+   - VID_FRAME_RATE = 'chosen frame rate'
+   - VID_SEC_LENGTH_OF_VIDEO = 'chosen length of each video
+   - IMG_SEC_BURST_LENGTH = 'chosen length of image burst in seconds'
+   - IMG_NUM_PER_BURST = 'number of pictures to take per burst'
+   - IMG_RESOLUTION = VID_RESOLUTION_OPTIONS.get(VID_RESOLUTION_INPUT) #this will default to make the image resolution equal to that of the chosen video resolution. You can adjust this to a tuple with the desired resolution. maximum possible resolution is `(4608, 2592)` and is an example of how to input a tuple.
+   - IMG_BUFFER_COUNT = 1 #leave this as 1 unless you need to take more than an image a second. See script for details.
 
 Now the scripts have you credentials and are ready to be run. I would advise testing them at this point by using `sudo -E python3 main.py` from the desktop in the terminal. The sudo -E part of the command is because you need to have sudo priviledges in order to change or update system clock (which the script does on start up).
 
@@ -236,14 +242,17 @@ Now the scripts have you credentials and are ready to be run. I would advise tes
 Once you have tested the script runs smoothly, you now need to set the pi up so that the script is run automatically when the pi starts up. To do this we use the @reboot command in the crontab (the crontab is a Linux command that allows you to schedule tasks to run at specific times):
 
 1. in your terminal run the command `crontab -e` this opens the crontab for editting
-2. scroll to the bottom and add the following two lines:
+2. scroll to the bottom and add the following three lines:
   - `@reboot v4l2-ctl --set-ctrl wide_dynamic_range=1 -d /dev/v4l-subdev0`
   - `@reboot sudo -E python3 /home/your_pi_username/Desktop/main.py`
+  - `0 0 * * * sudo reboot`
 
 *@reboot runs the proceeding command on start up
 *The first command is to enable the HDR setting for the camera. This helps with contrast and making the picture quality better. Its not strictly necessary.
 *The second command runs the python script that you are pointing to. The part after python3 is just the path to your python script you want to run on startup (in this case it will be the main.py)
 *sudo runs the script with admin privileges. This is required in order to set the system clock to the current time. The -E preserves the current environment that the script is running in (so you don't need to install modules/dependencies globally in order to access them when running as an admin). 
+*The third line reboots the pi at midnight everynight. This is incase the python script is killed for some reason and you are unable to reboot it remotely. If you would like it to happen weekly `0 0 * * 0` 
+*For further information on crontab commands, check out this article: https://www.jcchouinard.com/python-automation-with-cron-on-mac/
 
 Lekka! You are good to go! Good luck and happy recording!
 
