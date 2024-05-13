@@ -46,18 +46,20 @@ import math
 # 5 = 1920x1080 (mjpeg)(max fps = 37)(h264Encoder) note that this is the maximum resolution for the h264Encoder, videos will become much larger using the JpegEncoder
 # 6 = 1920x1080 (mp4)(max fps = 37)(h264Encoder) note that this is the maximum resolution for the h264Encoder, videos will become much larger using the JpegEncoder
 # 7 = 2304x1296 (mjpeg)(max fps = 17)(JpegEncoder) note this is maximum ratio for sensor 2 in the camera module 3
-# 8 = 2752x1550 (mjpeg)(max fps = 11)(JpegEncoder) note this is the last resolution that you can have 6 buffers
+# 8 = 2488x1400 (mjpeg)(max fps = 15)(JpegEncoder) note this is the last resolution that you can have 6 buffers
 # 9 = 2992x1800 (mjpeg)(max fps = 8)(JpegEncoder) note this uses only 5 buffers and may be unstable
 # 10 = 3792x2132 (mjpeg)(max fps = 3)(JpegEncoder) note this uses only 3 buffers and may be unstable
 # 11 = 4608x2592 (mjpeg)(max fps = 1)(JpegEncoder) note this uses only 1 buffers and may be unstable
+# 12 = 2752x1550 (mjpeg)(max fps = 8)(JpegEncoder) note this uses only 5 buffers and may be unstable
+# 13 = 3555x2000 (mjpeg)(max fps = 2)(JpegEncoder) note this uses only 3 buffers and may be unstable
 VID_RESOLUTION_INPUT = 8 # an interger from 1 to 11
 # set the default frame rate (please take into account the max frame rates mentioned above for the possible resolutions)
-VID_FRAME_RATE = 11
+VID_FRAME_RATE = 15
 # set the video length to take in seconds
 VID_SEC_LENGTH_OF_VIDEO = 60 # I would potentially move this into an option to be set through telegram and make this just setting the default value
 
 # do not alter the below variable unless you would like to add new resolutions and know how to adjust the encoders in the capture function
-VID_RESOLUTION_OPTIONS = {1: (1280, 720), 2: (1280, 720), 3: (1536, 864), 4: (1536, 864), 5: (1920, 1080), 6: (1920, 1080), 7: (2304, 1296), 8: (2752, 1550), 9: (2992, 1800), 10: (3792, 2132), 11: (4608, 2592)}
+VID_RESOLUTION_OPTIONS = {1: (1280, 720), 2: (1280, 720), 3: (1536, 864), 4: (1536, 864), 5: (1920, 1080), 6: (1920, 1080), 7: (2304, 1296), 8: (2488, 1400), 9: (2992, 1800), 10: (3792, 2132), 11: (4608, 2592), 12: (2752, 1550), 13: (3555, 2000)}
 
 
 # CAMERA RELATED GLOBAL VARIABLES
@@ -184,12 +186,14 @@ class Camera:
             frame_duration = (math.ceil(1000000/self.vid_frame_rate)-1, math.ceil(1000000/self.vid_frame_rate))
 
             # choose the configuration and output type based on desired resoltuion and specified output type
-            if VID_RESOLUTION_INPUT == (2, 4, 6):
+            if VID_RESOLUTION_INPUT in (2, 4, 6):
                 # set video path 
                 vid_path = os.path.join(desktop_path, (f'{self.user_name}_video_res_{vid_width}_{vid_height}_duration_{vid_duration}_fps_{vid_fps}_{current_time}.mp4'))
                 # set the video configuration
                 video_config = self.camera.create_video_configuration({"size": self.vid_resolution}, buffer_count=6, controls={"FrameDurationLimits": frame_duration})
                 # the following line will select an optimim resolution that is closest to the desired resolution
+                self.camera.align_configuration(video_config)
+                # configure the camera
                 self.camera.configure(video_config)
                 # select the appropriate encoder for the resolution and output 
                 encoder = H264Encoder()
@@ -207,12 +211,14 @@ class Camera:
                 self.camera.stop()
             
             # choose the configuration and output type based on desired resoltuion and specified output type
-            elif VID_RESOLUTION_INPUT == (1, 3, 5):
+            elif VID_RESOLUTION_INPUT in (1, 3, 5):
                 # set video path 
                 vid_path = os.path.join(desktop_path, (f'{self.user_name}_video_res_{vid_width}_{vid_height}_duration_{vid_duration}_fps_{vid_fps}_{current_time}.mjpeg'))
                 # set the video configuration
                 video_config = self.camera.create_video_configuration({"size": self.vid_resolution}, buffer_count=6, controls={"FrameDurationLimits": frame_duration})
                 # the following line will select an optimim resolution that is closest to the desired resolution
+                self.camera.align_configuration(video_config)
+                # configure the camera
                 self.camera.configure(video_config)
                 # select the appropriate encoder for the resolution and output 
                 encoder = H264Encoder()
@@ -230,12 +236,14 @@ class Camera:
                 self.camera.stop()
 
             # choose the configuration and output type based on desired resoltuion and specified output type
-            elif VID_RESOLUTION_INPUT == (7, 8):
+            elif VID_RESOLUTION_INPUT in (7, 8):
                 # set video path 
                 vid_path = os.path.join(desktop_path, (f'{self.user_name}_video_res_{vid_width}_{vid_height}_duration_{vid_duration}_fps_{vid_fps}_{current_time}.mjpeg'))
                 # set the video configuration
                 video_config = self.camera.create_video_configuration({"size": self.vid_resolution}, buffer_count=6, controls={"FrameDurationLimits": frame_duration})
                 # the following line will select an optimim resolution that is closest to the desired resolution
+                self.camera.align_configuration(video_config)
+                # configure the camera
                 self.camera.configure(video_config)
                 # select the appropriate encoder for the resolution and output 
                 encoder = JpegEncoder()
@@ -255,37 +263,41 @@ class Camera:
                 self.timer.sleep(60)
 
             # choose the configuration and output type based on desired resoltuion and specified output type
-            elif VID_RESOLUTION_INPUT == 9:
-                # set video path 
-                vid_path = os.path.join(desktop_path, (f'{self.user_name}_video_res_{vid_width}_{vid_height}_duration_{vid_duration}_fps_{vid_fps}_{current_time}.mjpeg'))
-                # set the video configuration
-                video_config = self.camera.create_video_configuration({"size": self.vid_resolution}, buffer_count=5, controls={"FrameDurationLimits": frame_duration})
-                # the following line will select an optimim resolution that is closest to the desired resolution
-                self.camera.configure(video_config)
-                # select the appropriate encoder for the resolution and output 
-                encoder = JpegEncoder()
-                # select the appropriate output
-                output = vid_path
-                # start the camera capturing frames
-                self.camera.start()
-                # start the encoder recording video (this is, frames are thrown away. Now they are stored)
-                self.camera.start_encoder(encoder, output)
-                # sleep for the length of the video
-                self.timer.sleep(self.vid_length_of_vid)
-                # stop the video recording
-                self.camera.stop_encoder()
-                # stopping camera so can reconfigure if resolution changes
-                self.camera.stop()
-                # sleep for 1 min to give pi some time to cool down
-                self.timer.sleep(60)
-
-            # choose the configuration and output type based on desired resoltuion and specified output type
-            elif VID_RESOLUTION_INPUT == 10:
+            elif VID_RESOLUTION_INPUT in (9, 12):
                 # set video path 
                 vid_path = os.path.join(desktop_path, (f'{self.user_name}_video_res_{vid_width}_{vid_height}_duration_{vid_duration}_fps_{vid_fps}_{current_time}.mjpeg'))
                 # set the video configuration
                 video_config = self.camera.create_video_configuration({"size": self.vid_resolution}, buffer_count=3, controls={"FrameDurationLimits": frame_duration})
                 # the following line will select an optimim resolution that is closest to the desired resolution
+                self.camera.align_configuration(video_config)
+                # configure the camera
+                self.camera.configure(video_config)
+                # select the appropriate encoder for the resolution and output 
+                encoder = JpegEncoder()
+                # select the appropriate output
+                output = vid_path
+                # start the camera capturing frames
+                self.camera.start()
+                # start the encoder recording video (this is, frames are thrown away. Now they are stored)
+                self.camera.start_encoder(encoder, output)
+                # sleep for the length of the video
+                self.timer.sleep(self.vid_length_of_vid)
+                # stop the video recording
+                self.camera.stop_encoder()
+                # stopping camera so can reconfigure if resolution changes
+                self.camera.stop()
+                # sleep for 1 min to give pi some time to cool down
+                self.timer.sleep(60)
+
+            # choose the configuration and output type based on desired resoltuion and specified output type
+            elif VID_RESOLUTION_INPUT in (10, 13):
+                # set video path 
+                vid_path = os.path.join(desktop_path, (f'{self.user_name}_video_res_{vid_width}_{vid_height}_duration_{vid_duration}_fps_{vid_fps}_{current_time}.mjpeg'))
+                # set the video configuration
+                video_config = self.camera.create_video_configuration({"size": self.vid_resolution}, buffer_count=3, controls={"FrameDurationLimits": frame_duration})
+                # the following line will select an optimim resolution that is closest to the desired resolution
+                self.camera.align_configuration(video_config)
+                # configure the camera
                 self.camera.configure(video_config)
                 # select the appropriate encoder for the resolution and output 
                 encoder = JpegEncoder()
