@@ -184,7 +184,7 @@ class Camera:
             frame_duration = (math.ceil(1000000/self.vid_frame_rate)-1, math.ceil(1000000/self.vid_frame_rate))
 
             # choose the configuration and output type based on desired resoltuion and specified output type
-            if VID_RESOLUTION_INPUT == 2 or 4 or 6:
+            if VID_RESOLUTION_INPUT == (2, 4, 6):
                 # set video path 
                 vid_path = os.path.join(desktop_path, (f'{self.user_name}_video_res_{vid_width}_{vid_height}_duration_{vid_duration}_fps_{vid_fps}_{current_time}.mp4'))
                 # set the video configuration
@@ -207,7 +207,7 @@ class Camera:
                 self.camera.stop()
             
             # choose the configuration and output type based on desired resoltuion and specified output type
-            elif VID_RESOLUTION_INPUT == 1 or 3 or 5:
+            elif VID_RESOLUTION_INPUT == (1, 3, 5):
                 # set video path 
                 vid_path = os.path.join(desktop_path, (f'{self.user_name}_video_res_{vid_width}_{vid_height}_duration_{vid_duration}_fps_{vid_fps}_{current_time}.mjpeg'))
                 # set the video configuration
@@ -230,7 +230,7 @@ class Camera:
                 self.camera.stop()
 
             # choose the configuration and output type based on desired resoltuion and specified output type
-            elif VID_RESOLUTION_INPUT == 7 or 8:
+            elif VID_RESOLUTION_INPUT == (7, 8):
                 # set video path 
                 vid_path = os.path.join(desktop_path, (f'{self.user_name}_video_res_{vid_width}_{vid_height}_duration_{vid_duration}_fps_{vid_fps}_{current_time}.mjpeg'))
                 # set the video configuration
