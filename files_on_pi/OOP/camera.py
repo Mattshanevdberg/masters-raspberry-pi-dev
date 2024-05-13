@@ -265,11 +265,11 @@ class Camera:
                 self.timer.sleep(60)
 
             # choose the configuration and output type based on desired resoltuion and specified output type
-            elif VID_RESOLUTION_INPUT in (9, 12):
+            elif VID_RESOLUTION_INPUT in (9, 12, 14):
                 # set video path 
                 vid_path = os.path.join(desktop_path, (f'{self.user_name}_video_res_{vid_width}_{vid_height}_duration_{vid_duration}_fps_{vid_fps}_{current_time}.mjpeg'))
                 # set the video configuration
-                video_config = self.camera.create_video_configuration({"size": self.vid_resolution}, buffer_count=3, controls={"FrameDurationLimits": frame_duration})
+                video_config = self.camera.create_video_configuration({"size": self.vid_resolution}, buffer_count=5, controls={"FrameDurationLimits": frame_duration})
                 # the following line will select an optimim resolution that is closest to the desired resolution
                 self.camera.align_configuration(video_config)
                 # configure the camera
@@ -344,6 +344,7 @@ class Camera:
                 self.timer.sleep(60)
 
             else:
+                function_name = 'Camera.capture_video:'
                 e = "You did not select a valid resolution input for the video. Please put the device in maintenance mode and select a valid resolution for the video in the global variables in the camera.py file"
                 self.timer.sleep(120)
                 self.tele_bot_cam.send_telegram(function_name + e)
