@@ -414,8 +414,13 @@ class DriveUpload:
                                     mimetype='video/x-motion-jpeg', chunksize=2*1024*1024, resumable=True)
             # pylint: disable=maybe-no-membe*r
             file = service.files().create(body=file_metadata, media_body=media,
-                                        fields='id').execute()
-            #print(F'File ID: {file.get("id")}')
+                                        fields='id')
+            response = None
+            while response is None:
+                status, response = file.next_chunk(num_retries=3) 
+                if status:
+                    print("Uploaded {}%.".format(int(status.progress() * 100)))
+            print(f'File ID: {file.get("id")}')
 
         except Exception as e: 
             e = str(e) 
