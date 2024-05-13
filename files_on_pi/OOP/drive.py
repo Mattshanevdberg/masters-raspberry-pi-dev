@@ -420,7 +420,7 @@ class DriveUpload:
                 status, response = file.next_chunk(num_retries=3) 
                 if status:
                     print("Uploaded {}%.".format(int(status.progress() * 100)))
-            print(f'File ID: {file.get("id")}')
+            print('File ID:{}'.format(response.get("id")))
 
         except Exception as e: 
             e = str(e) 
