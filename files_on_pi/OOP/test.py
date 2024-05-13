@@ -462,7 +462,7 @@ def process_videos_with_extension(path_to_directory, extension):
             print(f"Resolution: {resolution[0]}x{resolution[1]}\n")
 
 # Example usage - process all .mjpeg files in the current directory
-process_videos_with_extension('/home/matthew/Desktop/Check_videos_240424','mp4')
+process_videos_with_extension('/home/matthew/Desktop/Check_videos_240424','mjpeg')
 
 #TEST
 VIDEO_RESOLUTION_INPUT = 11 # an interger from 1 to 11

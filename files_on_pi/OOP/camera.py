@@ -46,13 +46,13 @@ import math
 # 5 = 1920x1080 (mjpeg)(max fps = 37)(h264Encoder) note that this is the maximum resolution for the h264Encoder, videos will become much larger using the JpegEncoder
 # 6 = 1920x1080 (mp4)(max fps = 37)(h264Encoder) note that this is the maximum resolution for the h264Encoder, videos will become much larger using the JpegEncoder
 # 7 = 2304x1296 (mjpeg)(max fps = 17)(JpegEncoder) note this is maximum ratio for sensor 2 in the camera module 3
-# 8 = 2488x1400 (mjpeg)(max fps = 15)(JpegEncoder) note this is the last resolution that you can have 6 buffers
+# 8 = 2480x1400 (mjpeg)(max fps = 15)(JpegEncoder) note this is the last resolution that you can have 6 buffers
 # 9 = 2992x1800 (mjpeg)(max fps = 8)(JpegEncoder) note this uses only 5 buffers and may be unstable
 # 10 = 3792x2132 (mjpeg)(max fps = 3)(JpegEncoder) note this uses only 3 buffers and may be unstable
 # 11 = 4608x2592 (mjpeg)(max fps = 1)(JpegEncoder) note this uses only 1 buffers and may be unstable
 # 12 = 2752x1550 (mjpeg)(max fps = 8)(JpegEncoder) note this uses only 5 buffers and may be unstable
-# 13 = 3555x2000 (mjpeg)(max fps = 2)(JpegEncoder) note this uses only 3 buffers and may be unstable
-# 14 = 2667x1500 (mjpeg)(max fps = 11)(JpegEncoder) note this uses only 5 buffers and may be unstable
+# 13 = 3552x2000 (mjpeg)(max fps = 2)(JpegEncoder) note this uses only 3 buffers and may be unstable
+# 14 = 2656x1500 (mjpeg)(max fps = 11)(JpegEncoder) note this uses only 5 buffers and may be unstable
 
 VID_RESOLUTION_INPUT = 14 # an interger from 1 to 14
 # set the default frame rate (please take into account the max frame rates mentioned above for the possible resolutions)
@@ -61,7 +61,7 @@ VID_FRAME_RATE = 12
 VID_SEC_LENGTH_OF_VIDEO = 60 # I would potentially move this into an option to be set through telegram and make this just setting the default value
 
 # do not alter the below variable unless you would like to add new resolutions and know how to adjust the encoders in the capture function
-VID_RESOLUTION_OPTIONS = {1: (1280, 720), 2: (1280, 720), 3: (1536, 864), 4: (1536, 864), 5: (1920, 1080), 6: (1920, 1080), 7: (2304, 1296), 8: (2488, 1400), 9: (2992, 1800), 10: (3792, 2132), 11: (4608, 2592), 12: (2752, 1550), 13: (3555, 2000), 14: (2667, 1500)}
+VID_RESOLUTION_OPTIONS = {1: (1280, 720), 2: (1280, 720), 3: (1536, 864), 4: (1536, 864), 5: (1920, 1080), 6: (1920, 1080), 7: (2304, 1296), 8: (2480, 1400), 9: (2992, 1800), 10: (3792, 2132), 11: (4608, 2592), 12: (2752, 1550), 13: (3552, 2000), 14: (2656, 1500)}
 
 
 # CAMERA RELATED GLOBAL VARIABLES
