@@ -52,14 +52,16 @@ import math
 # 11 = 4608x2592 (mjpeg)(max fps = 1)(JpegEncoder) note this uses only 1 buffers and may be unstable
 # 12 = 2752x1550 (mjpeg)(max fps = 8)(JpegEncoder) note this uses only 5 buffers and may be unstable
 # 13 = 3555x2000 (mjpeg)(max fps = 2)(JpegEncoder) note this uses only 3 buffers and may be unstable
-VID_RESOLUTION_INPUT = 8 # an interger from 1 to 11
+# 14 = 2667x1500 (mjpeg)(max fps = 11)(JpegEncoder) note this uses only 5 buffers and may be unstable
+
+VID_RESOLUTION_INPUT = 14 # an interger from 1 to 14
 # set the default frame rate (please take into account the max frame rates mentioned above for the possible resolutions)
-VID_FRAME_RATE = 15
+VID_FRAME_RATE = 12
 # set the video length to take in seconds
 VID_SEC_LENGTH_OF_VIDEO = 60 # I would potentially move this into an option to be set through telegram and make this just setting the default value
 
 # do not alter the below variable unless you would like to add new resolutions and know how to adjust the encoders in the capture function
-VID_RESOLUTION_OPTIONS = {1: (1280, 720), 2: (1280, 720), 3: (1536, 864), 4: (1536, 864), 5: (1920, 1080), 6: (1920, 1080), 7: (2304, 1296), 8: (2488, 1400), 9: (2992, 1800), 10: (3792, 2132), 11: (4608, 2592), 12: (2752, 1550), 13: (3555, 2000)}
+VID_RESOLUTION_OPTIONS = {1: (1280, 720), 2: (1280, 720), 3: (1536, 864), 4: (1536, 864), 5: (1920, 1080), 6: (1920, 1080), 7: (2304, 1296), 8: (2488, 1400), 9: (2992, 1800), 10: (3792, 2132), 11: (4608, 2592), 12: (2752, 1550), 13: (3555, 2000), 14: (2667, 1500)}
 
 
 # CAMERA RELATED GLOBAL VARIABLES
