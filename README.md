@@ -107,7 +107,7 @@ This is an optional step. But at this stage you might find you are tired of swit
 The Pi OS does not have all the packages we need to run the code in this repository, so we will need to install that
 1. Install python3, pydrive, telepot, google-api-python-client and psutli packages by running the following commands in the terminal:
    - `sudo apt update`
-   - `sudo apt install python3=3.9.2-3`
+   - `sudo apt install python3=3.11.2-1`
    - `pip install telepot==12.7`
    - `pip install google-api-python-client==2.125.0`
    - `pip install psutil==5.8.0`
