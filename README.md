@@ -102,6 +102,7 @@ This is an optional step. But at this stage you might find you are tired of swit
    - To connect via SSH, use the following command, replacing pi with your user_name (if you haven't changed it, it will be 'pi') and  your_pi_ip with the IP address you noted down earlier: `ssh pi@your_pi_ip`
    - You might be prompted with a message about the authenticity of the host; type "yes" to continue.
    - Enter the default password when prompted (the default password is 'raspberry' unless you've changed it) OR enter your pi password if you have set one (note that when entering your password, it will not show up on the screen)
+   - If you are setting up mulitple cameras and you get something like 'WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!' run the command that is suggested with sudo priveledges then try ssh into the pi again but this time ssh in with sudo priveledges (put sudo before the ssh command)
 
 
 ### 7. Installing the necessary packages on the Pi ###
