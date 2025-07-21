@@ -230,7 +230,20 @@ Update the Global variables in the main.py, drive.py and telegram.py (use `sudo 
 
 Now the scripts have you credentials and are ready to be run. I would advise testing them at this point by using `sudo -E python3 main.py` from the desktop in the terminal. The sudo -E part of the command is because you need to have sudo priviledges in order to change or update system clock (which the script does on start up).
 
-### 13. Set up the Pi to lauch the main.py script on start up ###
+### 13. First google drive authorisation via Telegram ###
+
+When you run the script for the first time, you will be prompted to authorize Google Drive access for your device. The script will send a verification URL and a device code to your Telegram bot. 
+
+**Instructions:**
+1. Open Telegram and check the messages sent by your bot.
+2. You will receive two messages:
+    - A verification URL (link).
+    - A device verification code.
+3. Open the verification URL on your phone or computer and enter the code.
+
+Try do this promptly as the verification code only lasts a while. When the code expires the the bot should send a new code. However, it may be necessary to run the code again and get a new code.
+
+### 14. Set up the Pi to lauch the main.py script on start up ###
 Once you have tested the script runs smoothly, you now need to set the pi up so that the script is run automatically when the pi starts up. To do this we use the @reboot command in the crontab (the crontab is a Linux command that allows you to schedule tasks to run at specific times):
 
 1. in your terminal run the command `crontab -e` this opens the crontab for editting
